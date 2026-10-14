@@ -1,0 +1,33 @@
+# Deployed with Coolify ("Docker Compose" build pack). Coolify generates SERVICE_PASSWORD_POSTGRES
+# and routes the domain set for the "api" service to port 8080. Set PRIM_API_KEY in Coolify's environment.
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      - SERVICE_FQDN_API_8080
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Tablo=Host=db;Port=5432;Database=opentablo;Username=opentablo;Password=${SERVICE_PASSWORD_POSTGRES}
+      - PRIM_API_KEY=${PRIM_API_KEY:?PRIM_API_KEY is required}
+      - Prim__DailyBudget=${PRIM_DAILY_BUDGET:-900}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: docker.io/postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=opentablo
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
+      - POSTGRES_DB=opentablo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opentablo -d opentablo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

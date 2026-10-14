@@ -1,0 +1,925 @@
+{
+ "disruptions": [
+  {
+   "id": "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f",
+   "applicationPeriods": [
+    {
+     "begin": "20260811T040000",
+     "end": "20270101T030000"
+    }
+   ],
+   "lastUpdate": "20261014T113219",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 234 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 234 est déviée : les arrêts situés entre Andrei Sakharov et Etienne Dolet ne sont plus desservis en direction de Fort d’Aubervilliers. Reprise estimée : vendredi 1 janvier 2027, à partir de 03h00. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01234",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:480351",
+      "name": "Andrei Sakharov (Bondy)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72501",
+      "name": "Ambroise Paré / Etienne Dolet (Bondy)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "807d1de1-c27f-4ad7-9afd-d0802d312444",
+   "applicationPeriods": [
+    {
+     "begin": "20260430T220000",
+     "end": "20270101T030000"
+    }
+   ],
+   "lastUpdate": "20260430T150029",
+   "cause": "PERTURBATION",
+   "severity": "PERTURBEE",
+   "title": "Arrêts non desservis direction Aubervilliers",
+   "message": "<p>Les arrêts situés entre République - Division Leclerc et Fort d'Aubervilliers ne sont plus desservis en direction de Fort d’Aubervilliers. Reprise estimée : vendredi 1 janvier 2027.</p>"
+  },
+  {
+   "id": "e1ecb78b-c867-4837-a69f-c707e0b8881c",
+   "applicationPeriods": [
+    {
+     "begin": "20261019T040000",
+     "end": "20261219T030000"
+    }
+   ],
+   "lastUpdate": "20261014T110619",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 248 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 248 sera déviée : les arrêts situés entre IUT Paris 13 et Division Leclerc - Stendhal ne seront plus desservis en direction de Fort d'aubervilliers. Quand : à partir du lundi 19 octobre 2026, jusqu'au samedi 19 décembre 2026. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)"
+  },
+  {
+   "id": "4db0d6f3-ff4d-446f-9434-7c6f1f10acca",
+   "applicationPeriods": [
+    {
+     "begin": "20261013T150000",
+     "end": "20261018T043000"
+    }
+   ],
+   "lastUpdate": "20261013T150211",
+   "cause": "PERTURBATION",
+   "severity": "INFORMATION",
+   "tags": [
+    "Actualité"
+   ],
+   "title": "Métro 6 / 2 / 1 : Manifestation culturelle - Autre",
+   "message": "<p>🎤 Concert Plenitude Arena : stations La Défense (M1, RER A, RER E, T2 ou lignes L et U), Nanterre–Préfecture (RER A) ou Nanterre–La Folie (RER E). Plus d'infos sur les sites et applis d’Ile-de-France Mobilités et Bonjour RATP.</p>",
+   "shortMessage": "Autre"
+  },
+  {
+   "id": "1455dd0b-5fa7-4863-8d38-f651017e4487",
+   "applicationPeriods": [
+    {
+     "begin": "20261019T040000",
+     "end": "20261219T030000"
+    }
+   ],
+   "lastUpdate": "20261014T111045",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 248 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 248 sera déviée : les arrêts situés entre Maison de Quartier - Courtillières et IUT Paris 13 ne seront plus desservis en direction de Gare de Drancy <RER>. Quand : à partir du lundi 19 octobre 2026, jusqu'au samedi 19 décembre 2026. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)"
+  },
+  {
+   "id": "341bd31f-b516-4f8a-9418-3c8705526512",
+   "applicationPeriods": [
+    {
+     "begin": "20261018T040000",
+     "end": "20261219T030000"
+    }
+   ],
+   "lastUpdate": "20261014T113252",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 234 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 234 sera déviée : les arrêts situés entre République - Division Leclerc et Fort d'Aubervilliers ne seront plus desservis en direction de Fort d’Aubervilliers. Quand : à partir du dimanche 18 octobre 2026, jusqu'au samedi 19 décembre 2026. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01234",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72482",
+      "name": "République - Division Leclerc (Bobigny)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:73695",
+      "name": "Fort d'Aubervilliers (Aubervilliers)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "a534f2c7-ad5a-42e5-b256-462a37d65e42",
+   "applicationPeriods": [
+    {
+     "begin": "20261016T214500",
+     "end": "20261017T030000"
+    },
+    {
+     "begin": "20261017T214500",
+     "end": "20261018T030000"
+    },
+    {
+     "begin": "20261018T214500",
+     "end": "20261019T030000"
+    },
+    {
+     "begin": "20261019T214500",
+     "end": "20261020T030000"
+    },
+    {
+     "begin": "20261020T214500",
+     "end": "20261021T030000"
+    },
+    {
+     "begin": "20261021T214500",
+     "end": "20261022T030000"
+    },
+    {
+     "begin": "20261022T214500",
+     "end": "20261023T030000"
+    },
+    {
+     "begin": "20261023T214500",
+     "end": "20261024T030000"
+    },
+    {
+     "begin": "20261024T214500",
+     "end": "20261025T030000"
+    },
+    {
+     "begin": "20261025T214500",
+     "end": "20261026T030000"
+    },
+    {
+     "begin": "20261026T214500",
+     "end": "20261027T030000"
+    },
+    {
+     "begin": "20261027T214500",
+     "end": "20261028T030000"
+    },
+    {
+     "begin": "20261028T214500",
+     "end": "20261029T030000"
+    },
+    {
+     "begin": "20261029T214500",
+     "end": "20261030T030000"
+    }
+   ],
+   "lastUpdate": "20260907T105816",
+   "cause": "TRAVAUX",
+   "severity": "PERTURBEE",
+   "title": "RER A : La Varenne Chenn. <-> Boissy-St-Léger 16-29/10, dès 21h45",
+   "message": "<p>P&#233;riode : &#224; partir de 21h45<br><br>Dates : du vendredi 16 au jeudi 29 octobre, week-ends compris<br><br>Le trafic est interrompu entre La Varenne Chennevi&#232;res et Boissy-Saint-L&#233;ger.<br><br>Un service de bus de remplacement est mis en place, avec desserte des gares interm&#233;diaires.<br><br>Les horaires du calculateur d'itin&#233;raire tiennent compte des travaux.<br><br>Motif : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72881",
+      "name": "Boissy-Saint-Léger (Boissy-Saint-Léger)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72998",
+      "name": "La Varenne - Chennevières (Saint-Maur-des-Fossés)"
+     }
+    },
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72998",
+      "name": "La Varenne - Chennevières (Saint-Maur-des-Fossés)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72881",
+      "name": "Boissy-Saint-Léger (Boissy-Saint-Léger)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "3b68c1f6-30e6-43e6-8e4f-eb419be7479c",
+   "applicationPeriods": [
+    {
+     "begin": "20261018T040000",
+     "end": "20261219T020000"
+    }
+   ],
+   "lastUpdate": "20261014T102724",
+   "cause": "PERTURBATION",
+   "severity": "PERTURBEE",
+   "title": "Bus 234 - travaux sur la chaussée : service perturbé du 18/10 au 19/12",
+   "message": "<p>En raison de travaux sur la chaussée, le Bus 234 sera perturbé du 18/10 au 19/12, prévoir . Merci de votre compréhension.</p>",
+   "shortMessage": "Trafic fortement perturbé"
+  },
+  {
+   "id": "f546ccbf-7c3d-4730-b509-549f6b3510d9",
+   "applicationPeriods": [
+    {
+     "begin": "20261109T223000",
+     "end": "20261110T030000"
+    },
+    {
+     "begin": "20261110T223000",
+     "end": "20261111T030000"
+    },
+    {
+     "begin": "20261111T223000",
+     "end": "20261112T030000"
+    },
+    {
+     "begin": "20261112T223000",
+     "end": "20261113T030000"
+    },
+    {
+     "begin": "20261113T223000",
+     "end": "20261114T030000"
+    }
+   ],
+   "lastUpdate": "20260925T144543",
+   "cause": "TRAVAUX",
+   "severity": "PERTURBEE",
+   "title": "RER A : Nanterre-Préfecture - Cergy le Haut/Poissy du 09 au 13/11",
+   "message": "<p>P&#233;riode : en soir&#233;e &#224; partir de 22h00.<br><br>Dates : du lundi 09 au vendredi 13 novembre.<br><br>Le trafic est interrompu entre Nanterre&#8211;Pr&#233;fecture et Cergy le Haut / Poissy.<br><br>Un service de bus de remplacement est mis en place &#224; Nanterre&#8211;Universit&#233;, avec desserte des gares interm&#233;diaires.</p><p>Pour rejoindre la gare de Nanterre&#8211;Universit&#233;, les voyageurs peuvent emprunter le RER A branche Saint-Germain en Laye.&nbsp;<br><br>Les horaires du calculateur d'itin&#233;raire tiennent compte des travaux.<br><br>Motif : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:66834",
+      "name": "Cergy le Haut (Cergy)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:70945",
+      "name": "Nanterre - Préfecture (Nanterre)"
+     }
+    },
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:70945",
+      "name": "Nanterre - Préfecture (Nanterre)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:66834",
+      "name": "Cergy le Haut (Cergy)"
+     }
+    },
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:70945",
+      "name": "Nanterre - Préfecture (Nanterre)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:64883",
+      "name": "Poissy (Poissy)"
+     }
+    },
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:64883",
+      "name": "Poissy (Poissy)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:70945",
+      "name": "Nanterre - Préfecture (Nanterre)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "469d2ff8-b95b-46fe-87f8-72b3aa5651c6",
+   "applicationPeriods": [
+    {
+     "begin": "20261001T061000",
+     "end": "20270101T030000"
+    }
+   ],
+   "lastUpdate": "20261012T125211",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 346 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 346 est déviée : les arrêts situés entre Église et Rabelais ne sont plus desservis en direction de Le Blanc-Mesnil – Place de la Libération. Reprise estimée : vendredi 1 janvier 2027, à partir de 03h00. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)"
+  },
+  {
+   "id": "136bb2ad-2727-4225-b16b-44c9850fbcdb",
+   "applicationPeriods": [
+    {
+     "begin": "20261027T043000",
+     "end": "20261027T051000"
+    },
+    {
+     "begin": "20261028T043000",
+     "end": "20261028T051000"
+    },
+    {
+     "begin": "20261029T043000",
+     "end": "20261029T051000"
+    },
+    {
+     "begin": "20261030T043000",
+     "end": "20261030T051000"
+    },
+    {
+     "begin": "20261031T043000",
+     "end": "20261031T051000"
+    },
+    {
+     "begin": "20261103T043000",
+     "end": "20261103T051000"
+    },
+    {
+     "begin": "20261104T043000",
+     "end": "20261104T051000"
+    },
+    {
+     "begin": "20261105T043000",
+     "end": "20261105T051000"
+    },
+    {
+     "begin": "20261106T043000",
+     "end": "20261106T051000"
+    },
+    {
+     "begin": "20261107T043000",
+     "end": "20261107T051000"
+    }
+   ],
+   "lastUpdate": "20261005T151914",
+   "cause": "TRAVAUX",
+   "severity": "PERTURBEE",
+   "title": "RER A : Cergy le Haut -> Maisons-Laffitte 27/10-07/11",
+   "message": "<p>P&#233;riode : les mardi, mercredi, jeudi, vendredi, samedi de 04h30 &#224; 05h10.<br><br>Dates : du mardi 27 octobre au samedi 07 novembre.<br><br>Le premier train du matin ne circulera pas de Cergy&#8211;Le Haut vers Maisons-Laffitte.<br><br>Les horaires du calculateur d'itin&#233;raire tiennent compte des travaux.<br><br>Motif : travaux&nbsp;</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:66834",
+      "name": "Cergy le Haut (Cergy)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:65048",
+      "name": "Maisons-Laffitte (Maisons-Laffitte)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+   "applicationPeriods": [
+    {
+     "begin": "20260202T192600",
+     "end": "20270101T031400"
+    }
+   ],
+   "lastUpdate": "20260430T172220",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 234 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 234 est déviée : les arrêts situés entre République - Division Leclerc et Fort d'Aubervilliers ne sont plus desservis en direction de Fort d’Aubervilliers. Reprise estimée : vendredi 1 janvier 2027, à partir de 03h14. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01234",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:72482",
+      "name": "République - Division Leclerc (Bobigny)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:73695",
+      "name": "Fort d'Aubervilliers (Aubervilliers)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "76706246-a0eb-4e18-9a65-40d926b1ab4d",
+   "applicationPeriods": [
+    {
+     "begin": "20260907T040000",
+     "end": "20261101T020000"
+    }
+   ],
+   "lastUpdate": "20260907T040148",
+   "cause": "PERTURBATION",
+   "severity": "PERTURBEE",
+   "title": "Bus 234 - travaux sur la chaussée : service perturbé du 07/09 au 01/11",
+   "message": "<p>En raison de travaux sur la chaussée, le Bus 234 est perturbé  du 07/09 au 01/11, prévoir . Merci de votre compréhension.</p>",
+   "shortMessage": "Trafic fortement perturbé"
+  },
+  {
+   "id": "fbb9758c-0ed7-483f-887e-11b5335eea17",
+   "applicationPeriods": [
+    {
+     "begin": "20261001T061400",
+     "end": "20270101T030000"
+    }
+   ],
+   "lastUpdate": "20261006T162210",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 346 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 346 est déviée : les arrêts situés entre Rabelais et Église ne sont plus desservis en direction de Gare de Rosny – Bois Perrier. Reprise estimée : vendredi 1 janvier 2027, à partir de 03h00. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)"
+  },
+  {
+   "id": "b4fc37fe-58db-4a06-b2fe-f48a65640fa0",
+   "applicationPeriods": [
+    {
+     "begin": "20261012T215000",
+     "end": "20261013T030000"
+    },
+    {
+     "begin": "20261013T215000",
+     "end": "20261014T030000"
+    },
+    {
+     "begin": "20261014T215000",
+     "end": "20261015T030000"
+    },
+    {
+     "begin": "20261015T215000",
+     "end": "20261016T030000"
+    },
+    {
+     "begin": "20261016T215000",
+     "end": "20261017T030000"
+    },
+    {
+     "begin": "20261019T215000",
+     "end": "20261020T030000"
+    },
+    {
+     "begin": "20261020T215000",
+     "end": "20261021T030000"
+    },
+    {
+     "begin": "20261021T215000",
+     "end": "20261022T030000"
+    },
+    {
+     "begin": "20261022T215000",
+     "end": "20261023T030000"
+    },
+    {
+     "begin": "20261023T215000",
+     "end": "20261024T030000"
+    },
+    {
+     "begin": "20261026T215000",
+     "end": "20261027T030000"
+    },
+    {
+     "begin": "20261027T215000",
+     "end": "20261028T030000"
+    },
+    {
+     "begin": "20261028T215000",
+     "end": "20261029T030000"
+    },
+    {
+     "begin": "20261029T215000",
+     "end": "20261030T030000"
+    },
+    {
+     "begin": "20261030T215000",
+     "end": "20261031T030000"
+    },
+    {
+     "begin": "20261102T215000",
+     "end": "20261103T030000"
+    },
+    {
+     "begin": "20261103T215000",
+     "end": "20261104T030000"
+    },
+    {
+     "begin": "20261104T215000",
+     "end": "20261105T030000"
+    },
+    {
+     "begin": "20261105T215000",
+     "end": "20261106T030000"
+    },
+    {
+     "begin": "20261106T215000",
+     "end": "20261107T030000"
+    }
+   ],
+   "lastUpdate": "20260904T132639",
+   "cause": "TRAVAUX",
+   "severity": "PERTURBEE",
+   "title": "RER A : Maisons-Laffitte <-> Cergy le Haut 12/10-06/11",
+   "message": "<p>P&#233;riode : en semaine &#224; partir de 21h50.<br><br>Dates : du lundi 12 octobre au vendredi 06 novembre.<br><br>Le trafic est interrompu entre Maisons-Laffitte et Cergy le Haut.<br><br>Un service de bus de remplacement est mis en place &#224; Sartrouville, avec desserte des gares interm&#233;diaires.<br><br>Les horaires du calculateur d'itin&#233;raire tiennent compte des travaux.<br><br>Motif : travaux&nbsp;</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)",
+   "impactedSections": [
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:66834",
+      "name": "Cergy le Haut (Cergy)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:65048",
+      "name": "Maisons-Laffitte (Maisons-Laffitte)"
+     }
+    },
+    {
+     "lineId": "line:IDFM:C01742",
+     "from": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:65048",
+      "name": "Maisons-Laffitte (Maisons-Laffitte)"
+     },
+     "to": {
+      "type": "stop_area",
+      "id": "stop_area:IDFM:66834",
+      "name": "Cergy le Haut (Cergy)"
+     }
+    }
+   ]
+  },
+  {
+   "id": "049ef485-c8ba-4f87-a6af-5a28a7ed46a2",
+   "applicationPeriods": [
+    {
+     "begin": "20260927T124500",
+     "end": "20261101T034500"
+    }
+   ],
+   "lastUpdate": "20261014T112425",
+   "cause": "TRAVAUX",
+   "severity": "BLOQUANTE",
+   "title": "Bus 234 : Travaux - Arrêt(s) non desservi(s)",
+   "message": "<p>La ligne 234 est déviée : les arrêts situés entre Jean Jaurès et Mairie ne sont plus desservis en direction de Mairie de Livry-Gargan. Reprise estimée : dimanche 1 novembre 2026, à partir de 03h45. Raison : travaux.</p>",
+   "shortMessage": "Arrêt(s) non desservi(s)"
+  }
+ ],
+ "lines": [
+  {
+   "id": "line:IDFM:C01234",
+   "name": "234",
+   "shortName": "234",
+   "mode": "Bus",
+   "networkId": "network:IDFM:1094",
+   "impactedObjects": [
+    {
+     "type": "line",
+     "id": "line:IDFM:C01234",
+     "name": "234",
+     "disruptionIds": [
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+      "3b68c1f6-30e6-43e6-8e4f-eb419be7479c",
+      "807d1de1-c27f-4ad7-9afd-d0802d312444",
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f",
+      "341bd31f-b516-4f8a-9418-3c8705526512",
+      "76706246-a0eb-4e18-9a65-40d926b1ab4d"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:36518",
+     "name": "Division Leclerc - Courtillières",
+     "disruptionIds": [
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+      "341bd31f-b516-4f8a-9418-3c8705526512"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:29914",
+     "name": "République - Division Leclerc",
+     "disruptionIds": [
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+      "341bd31f-b516-4f8a-9418-3c8705526512"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:7859",
+     "name": "Cité du Pont de pierre",
+     "disruptionIds": [
+      "e1ecb78b-c867-4837-a69f-c707e0b8881c"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:29923",
+     "name": "Collèges",
+     "disruptionIds": [
+      "049ef485-c8ba-4f87-a6af-5a28a7ed46a2"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:424937",
+     "name": "Place du Marché",
+     "disruptionIds": [
+      "341bd31f-b516-4f8a-9418-3c8705526512",
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:27929",
+     "name": "Suzanne Buisson",
+     "disruptionIds": [
+      "fbb9758c-0ed7-483f-887e-11b5335eea17",
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:492177",
+     "name": "Fort d'Aubervilliers",
+     "disruptionIds": [
+      "341bd31f-b516-4f8a-9418-3c8705526512",
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:479719",
+     "name": "Andrei Sakharov",
+     "disruptionIds": [
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:494791",
+     "name": "Les Courtillières",
+     "disruptionIds": [
+      "e1ecb78b-c867-4837-a69f-c707e0b8881c"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:19160",
+     "name": "Etienne Dolet",
+     "disruptionIds": [
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:37486",
+     "name": "Suzanne Buisson",
+     "disruptionIds": [
+      "469d2ff8-b95b-46fe-87f8-72b3aa5651c6"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:40079",
+     "name": "Paul Renaud",
+     "disruptionIds": [
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:37625",
+     "name": "Cité du Pont de pierre",
+     "disruptionIds": [
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+      "1455dd0b-5fa7-4863-8d38-f651017e4487",
+      "341bd31f-b516-4f8a-9418-3c8705526512"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:39912",
+     "name": "Route d'Aulnay - Jean Moulin",
+     "disruptionIds": [
+      "fbb9758c-0ed7-483f-887e-11b5335eea17",
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:29917",
+     "name": "François Villon",
+     "disruptionIds": [
+      "049ef485-c8ba-4f87-a6af-5a28a7ed46a2"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:7862",
+     "name": "Rabelais",
+     "disruptionIds": [
+      "95148b0b-9ef8-4a76-ae36-dd0d3aa13e4f"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:7855",
+     "name": "Les Courtillières",
+     "disruptionIds": [
+      "a4a9d8fa-7b1a-41a0-b550-5d9acbcc65cb",
+      "341bd31f-b516-4f8a-9418-3c8705526512",
+      "1455dd0b-5fa7-4863-8d38-f651017e4487"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "line:IDFM:C01371",
+   "name": "1",
+   "shortName": "1",
+   "mode": "Metro",
+   "networkId": "network:IDFM:Operator_100",
+   "impactedObjects": [
+    {
+     "type": "line",
+     "id": "line:IDFM:C01371",
+     "name": "1",
+     "disruptionIds": [
+      "4db0d6f3-ff4d-446f-9434-7c6f1f10acca"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "line:IDFM:C01742",
+   "name": "A",
+   "shortName": "A",
+   "mode": "RapidTransit",
+   "networkId": "network:IDFM:71",
+   "impactedObjects": [
+    {
+     "type": "line",
+     "id": "line:IDFM:C01742",
+     "name": "A",
+     "disruptionIds": [
+      "a534f2c7-ad5a-42e5-b256-462a37d65e42",
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9",
+      "136bb2ad-2727-4225-b16b-44c9850fbcdb",
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:47879",
+     "name": "Neuville - Université",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:47897",
+     "name": "Cergy Saint-Christophe",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:44559",
+     "name": "Cergy Préfecture",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43104",
+     "name": "Cergy le Haut",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:47915",
+     "name": "Achères Grand Cormier",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43169",
+     "name": "Nanterre - Préfecture",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43146",
+     "name": "La Varenne - Chennevières",
+     "disruptionIds": [
+      "a534f2c7-ad5a-42e5-b256-462a37d65e42"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:46647",
+     "name": "Achères Ville",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43191",
+     "name": "Sartrouville",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43082",
+     "name": "Houilles - Carrières-sur-Seine",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43114",
+     "name": "Conflans Fin d'Oise",
+     "disruptionIds": [
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:58792",
+     "name": "Sucy - Bonneuil",
+     "disruptionIds": [
+      "a534f2c7-ad5a-42e5-b256-462a37d65e42"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:43094",
+     "name": "Boissy-Saint-Léger",
+     "disruptionIds": [
+      "a534f2c7-ad5a-42e5-b256-462a37d65e42"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:47874",
+     "name": "Poissy",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9"
+     ]
+    },
+    {
+     "type": "stop_point",
+     "id": "stop_point:IDFM:monomodalStopPlace:473109",
+     "name": "Maisons-Laffitte",
+     "disruptionIds": [
+      "f546ccbf-7c3d-4730-b509-549f6b3510d9",
+      "b4fc37fe-58db-4a06-b2fe-f48a65640fa0"
+     ]
+    }
+   ]
+  }
+ ],
+ "lastUpdatedDate": "2026-10-14T10:26:16.818Z"
+}

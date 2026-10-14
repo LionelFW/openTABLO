@@ -1,0 +1,43 @@
+// Mirrors backend/OpenTablo.Api/Contracts/Dtos.cs.
+
+export interface Line { id: string; name: string; mode: string; color: string; textColor: string }
+export interface StopArea { id: string; name: string; type: string; lat: number; lon: number; distance: number; lines: Line[] }
+export interface VelibStation { id: number; name: string; lat: number; lon: number; distance: number; mechanical: number; ebike: number; docks: number; renting: boolean }
+export interface NearbyResponse { radius: number; stops: StopArea[]; velib: VelibStation[] }
+export interface Departure { expected: string | null; atStop: boolean; status: string | null; platform: string | null }
+export interface DepartureGroup { lineId: string; line: Line | null; destination: string; next: Departure[] }
+export interface DeparturesResponse { stopAreaId: string; fetchedAt: string; departures: DepartureGroup[] }
+export interface Disruption { id: string; severity: string | null; cause: string | null; title: string | null; shortMessage: string | null; message: string | null }
+export interface LineDisruptions { lineId: string; disruptions: Disruption[] }
+export interface Address { label: string; lat: number; lon: number }
+
+export class ApiError extends Error {
+  readonly status: number
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
+// Empty on the web (same origin as the API); set VITE_API_BASE for native builds.
+const base = import.meta.env.VITE_API_BASE ?? ''
+
+async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const res = await fetch(`${base}/api${path}`, { signal })
+  if (!res.ok) {
+    const body = await res.json().catch(() => null)
+    throw new ApiError(res.status, body?.title ?? `Erreur ${res.status}`)
+  }
+  return res.json() as Promise<T>
+}
+
+// ~11 m precision is plenty to list stops and avoids sending an exact position.
+const round = (n: number) => n.toFixed(4)
+
+export const api = {
+  nearby: (lat: number, lon: number, radius: number) =>
+    get<NearbyResponse>(`/nearby?lat=${round(lat)}&lon=${round(lon)}&radius=${radius}`),
+  departures: (stopAreaId: string) => get<DeparturesResponse>(`/departures/${encodeURIComponent(stopAreaId)}`),
+  disruptions: (lineIds: string[]) => get<LineDisruptions[]>(`/disruptions?lines=${lineIds.map(encodeURIComponent).join(',')}`),
+  geocode: (q: string, signal?: AbortSignal) => get<Address[]>(`/geocode?q=${encodeURIComponent(q)}`, signal),
+}

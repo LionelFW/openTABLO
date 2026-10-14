@@ -1,0 +1,8 @@
+**/node_modules
+**/bin
+**/obj
+**/dist
+frontend/android
+frontend/ios
+.git
+.config

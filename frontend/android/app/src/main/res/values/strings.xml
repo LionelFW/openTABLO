@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">openTABLO</string>
+    <string name="title_activity_main">openTABLO</string>
+    <string name="package_name">fr.opentablo.app</string>
+    <string name="custom_url_scheme">fr.opentablo.app</string>
+</resources>
