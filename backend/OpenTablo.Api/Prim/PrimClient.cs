@@ -9,6 +9,10 @@ public sealed class PrimClient(HttpClient http, PrimQuota quota, ILogger<PrimCli
     public Task<DisruptionsBulk?> GetDisruptionsAsync(CancellationToken ct) =>
         GetAsync<DisruptionsBulk>("disruptions_bulk/disruptions/v2", ct);
 
+    /// <summary>Planned (not real-time) next departures of every route at an interchange zone, however far ahead.</summary>
+    public Task<StopSchedulesResponse?> GetStopSchedulesAsync(string zdcId, CancellationToken ct) =>
+        GetAsync<StopSchedulesResponse>($"v2/navitia/stop_areas/stop_area:IDFM:{zdcId}/stop_schedules?data_freshness=base_schedule&items_per_schedule=2&count=200", ct);
+
     async Task<T?> GetAsync<T>(string pathAndQuery, CancellationToken ct)
     {
         await quota.AcquireAsync(ct);

@@ -13,5 +13,7 @@ public class StopArea
     public string? Town { get; set; }
     /// <summary><see cref="Name"/> normalized by <see cref="Referential.SearchText"/>, for station search.</summary>
     public string SearchName { get; set; } = "";
+    /// <summary>IDFM interchange zone ("zone de correspondance") holding this stop area: its id in Navitia.</summary>
+    public string? ZdcId { get; set; }
     public List<TransitLine> Lines { get; set; } = [];
 }

@@ -27,6 +27,15 @@ public sealed record IdfmStopRow(
     public const string Fields = "arrid,zdaid,arrname,arrtype,arrgeopoint,arrtown";
 }
 
+/// <summary>Links a stop area to its interchange zone ("zone de correspondance"), the stop area id Navitia uses.</summary>
+public sealed record IdfmStopZoneRow(
+    [property: JsonPropertyName("zdaid")] string ZdaId,
+    [property: JsonPropertyName("zdcid")] string? ZdcId)
+{
+    public const string Dataset = "zones-d-arrets";
+    public const string Fields = "zdaid,zdcid";
+}
+
 public sealed record IdfmGeoPoint(double Lat, double Lon);
 
 /// <summary>Links a line (IDFM:{id_line}) to a stop (IDFM:{arrid}), or to a whole stop area (IDFM:monomodalStopPlace:{zdaid}) for rail.</summary>

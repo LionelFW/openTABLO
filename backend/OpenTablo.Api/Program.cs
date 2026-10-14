@@ -58,6 +58,7 @@ builder.Services.AddHttpClient<GeocodingClient>((sp, http) =>
 
 builder.Services.AddSingleton<PrimQuota>();
 builder.Services.AddScoped<DeparturesService>();
+builder.Services.AddScoped<ScheduleService>();
 builder.Services.AddScoped<DisruptionsService>();
 builder.Services.AddScoped<VelibStatusService>();
 builder.Services.AddScoped<NearbyService>();

@@ -28,6 +28,10 @@ function mockPrim(): Plugin {
               { lineId: bus20.id, line: bus20, destination: 'Gare Saint-Lazare', next: next(12, 31) },
             ],
           }
+        } else if (path.startsWith('/api/schedules/')) {
+          // A planned time for every line asked, spread from 20 min to 12 h ahead so today, tonight and tomorrow all show.
+          const lines = new URL(req.url ?? '/', 'http://localhost').searchParams.get('lines')?.split(',').filter(Boolean) ?? []
+          body = lines.map((lineId, i) => ({ lineId, planned: new Date(Date.now() + (20 + i * 97 % 700) * 60_000).toISOString() }))
         } else if (path === '/api/disruptions') {
           body = [{
             lineId: metro1.id,

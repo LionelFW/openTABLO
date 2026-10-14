@@ -8,6 +8,8 @@ export interface VelibStation { id: number; name: string; lat: number; lon: numb
 export interface NearbyResponse { radius: number; heroes: StopArea[]; stops: StopArea[]; velib: VelibStation[] }
 export interface Departure { expected: string | null; atStop: boolean; status: string | null; platform: string | null }
 export interface DepartureGroup { lineId: string; line: Line | null; destination: string; next: Departure[] }
+/** Next planned (timetable) departure of a line, for lines with nothing in the real-time window. */
+export interface Scheduled { lineId: string; planned: string }
 export interface DeparturesResponse { stopAreaId: string; fetchedAt: string; departures: DepartureGroup[] }
 export interface Disruption { id: string; severity: string | null; cause: string | null; title: string | null; shortMessage: string | null; message: string | null; places: string[] }
 export interface LineDisruptions { lineId: string; disruptions: Disruption[] }
@@ -44,6 +46,8 @@ export const api = {
   nearby: (lat: number, lon: number, radius: number) =>
     get<NearbyResponse>(`/nearby?lat=${round(lat)}&lon=${round(lon)}&radius=${radius}`),
   departures: (stopAreaId: string) => get<DeparturesResponse>(`/departures/${encodeURIComponent(stopAreaId)}`),
+  schedules: (stopAreaId: string, lineIds: string[]) =>
+    get<Scheduled[]>(`/schedules/${encodeURIComponent(stopAreaId)}?lines=${lineIds.map(encodeURIComponent).join(',')}`),
   disruptions: (lineIds: string[]) => get<LineDisruptions[]>(`/disruptions?lines=${lineIds.map(encodeURIComponent).join(',')}`),
   stations: (q: string, signal?: AbortSignal) => get<Station[]>(`/stations?q=${encodeURIComponent(q)}`, signal),
   geocode: (q: string, signal?: AbortSignal) => get<Address[]>(`/geocode?q=${encodeURIComponent(q)}`, signal),

@@ -14,6 +14,7 @@ public static class TransitEndpoints
         api.MapGet("/nearby", GetNearbyAsync);
         api.MapGet("/stations", (string q, StationSearchService search, CancellationToken ct) => search.SearchAsync(q, ct));
         api.MapGet("/departures/{stopAreaId}", GetDeparturesAsync);
+        api.MapGet("/schedules/{stopAreaId}", GetSchedulesAsync);
         api.MapGet("/disruptions", GetDisruptionsAsync);
         api.MapGet("/usage", (PrimQuota quota, CancellationToken ct) => quota.GetUsageAsync(ct));
         return api;
@@ -36,6 +37,18 @@ public static class TransitEndpoints
             return TypedResults.ValidationProblem(new Dictionary<string, string[]> { [nameof(stopAreaId)] = ["Expected a numeric IDFM stop area id."] });
 
         return TypedResults.Ok(await departures.GetAsync(stopAreaId, ct));
+    }
+
+    static async Task<Results<Ok<IReadOnlyList<ScheduledDto>>, ValidationProblem>> GetSchedulesAsync(
+        string stopAreaId, string? lines, ScheduleService schedules, CancellationToken ct)
+    {
+        if (stopAreaId.Length is 0 or > 12 || !stopAreaId.All(char.IsAsciiDigit))
+            return TypedResults.ValidationProblem(new Dictionary<string, string[]> { [nameof(stopAreaId)] = ["Expected a numeric IDFM stop area id."] });
+        var ids = (lines ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct().ToList();
+        if (ids.Count > MaxDisruptionLines)
+            return TypedResults.ValidationProblem(new Dictionary<string, string[]> { [nameof(lines)] = [$"At most {MaxDisruptionLines} lines per request."] });
+
+        return TypedResults.Ok(await schedules.GetAsync(stopAreaId, ids, ct));
     }
 
     static async Task<Results<Ok<IReadOnlyList<LineDisruptionsDto>>, ValidationProblem>> GetDisruptionsAsync(

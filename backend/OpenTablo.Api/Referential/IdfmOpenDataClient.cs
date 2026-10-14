@@ -9,6 +9,8 @@ public sealed class IdfmOpenDataClient(HttpClient http)
 
     public Task<List<IdfmStopLineRow>> GetStopLinesAsync(CancellationToken ct) => ExportAsync<IdfmStopLineRow>(IdfmStopLineRow.Dataset, IdfmStopLineRow.Fields, ct);
 
+    public Task<List<IdfmStopZoneRow>> GetStopZonesAsync(CancellationToken ct) => ExportAsync<IdfmStopZoneRow>(IdfmStopZoneRow.Dataset, IdfmStopZoneRow.Fields, ct);
+
     async Task<List<T>> ExportAsync<T>(string dataset, string fields, CancellationToken ct) =>
         await http.GetFromJsonAsync<List<T>>($"{dataset}/exports/json?select={fields}", ct)
         ?? throw new InvalidOperationException($"Empty export for dataset {dataset}.");

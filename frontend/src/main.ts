@@ -1,5 +1,5 @@
 import './style.css'
-import { api, ApiError, type Address, type DeparturesResponse, type Disruption, type LineDisruptions, type StopArea, type VelibStation, type Line } from './api'
+import { api, ApiError, type Address, type DeparturesResponse, type Scheduled, type Disruption, type LineDisruptions, type StopArea, type VelibStation, type Line } from './api'
 import { locateOnce, locationGranted } from './location'
 import { Capacitor } from '@capacitor/core'
 
@@ -19,6 +19,8 @@ const state = {
   hiddenModes: new Set<string>(JSON.parse(localStorage.getItem(HIDDEN_MODES_KEY) ?? '[]')),
   openStops: new Set<string>(),
   departures: new Map<string, DeparturesResponse | Error>(),
+  /** Fetched once per stop and search; an empty list while loading or after a failure. */
+  schedules: new Map<string, Scheduled[]>(),
   disruptions: new Map<string, LineDisruptions['disruptions']>(),
 }
 
@@ -39,6 +41,23 @@ function lineBadge(line: Line | null, fallbackId: string): string {
   const mode = ['metro', 'rail', 'tram'].includes(line.mode) ? line.mode : 'bus'
   const label = `${MODE_LABEL[line.mode] ?? 'Ligne'} ${line.name}`
   return `<span class="badge badge-${mode}" style="--c:${escapeHtml(line.color)};--t:${escapeHtml(line.textColor)}" role="img" aria-label="${escapeHtml(label)}">${escapeHtml(line.name)}</span>`
+}
+
+/** "à 00h30", "demain à 5h40" or "jeudi à 6h10", in Paris time whatever the device's time zone. */
+function plannedLabel(iso: string): string {
+  const paris = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleString('fr-FR', { timeZone: 'Europe/Paris', ...o })
+  // Service days end at 4h, like transit timetables: a night bus at 00h30 is tonight, not "demain".
+  const t = new Date(iso), day = (ms: number) => paris(new Date(ms - 4 * 3_600_000), { dateStyle: 'short' })
+  const time = paris(t, { hour: '2-digit', minute: '2-digit' }).replace(':', 'h')
+  if (day(t.getTime()) === day(Date.now())) return `à ${time}`
+  if (day(t.getTime()) === day(Date.now() + 86_400_000)) return `demain à ${time}`
+  return `${paris(t, { weekday: 'long' })} à ${time}`
+}
+
+function quietLabel(line: Line, stopId: string): string {
+  const next = state.schedules.get(stopId)?.find(s => s.lineId === line.id && Date.parse(s.planned) > Date.now())
+  if (line.realtime) return next ? `Pas de passage pour le moment. Prochain passage ${plannedLabel(next.planned)}.` : 'Pas de passage pour le moment'
+  return next ? `Pas d'horaires en temps réel. Prochain passage prévu ${plannedLabel(next.planned)}.` : "Pas d'horaires en temps réel"
 }
 
 function minutesLabel(expected: string | null, atStop: boolean): { text: string; sr: string; cls: string } {
@@ -73,7 +92,7 @@ function renderDepartures(stop: StopArea): string {
   const shown = new Set(groups.map(g => g.lineId))
   const quiet = stop.lines.filter(l => !shown.has(l.id))
   const quietHtml = quiet.length ? `<ul class="quiet-lines">${quiet.map(l => `
-    <li>${lineBadge(l, l.id)}<span>${l.realtime ? 'Pas de passage pour le moment' : "Pas d'horaires en temps réel"}</span></li>`).join('')}</ul>` : ''
+    <li>${lineBadge(l, l.id)}<span>${quietLabel(l, stop.id)}</span></li>`).join('')}</ul>` : ''
   if (groups.length === 0) return quietHtml || `<p class="muted">Aucun passage prévu dans les deux prochaines heures.</p>`
 
   return `<ul class="departures">${groups.map(g => `
@@ -172,6 +191,23 @@ async function loadDepartures(stopId: string) {
       : new Error('Prochains passages indisponibles.'))
   }
   renderStopBody(stopId)
+  loadSchedules(stopId)
+}
+
+/** Timetable times for the stop's lines missing from the board: one call per stop, only when some are missing. */
+async function loadSchedules(stopId: string) {
+  const data = state.departures.get(stopId)
+  const stop = [...heroes, ...stops].find(s => s.id === stopId)
+  if (state.schedules.has(stopId) || !stop || !data || data instanceof Error) return
+  if (stop.lines.every(l => data.departures.some(g => g.lineId === l.id))) return
+  state.schedules.set(stopId, [])
+  try {
+    // All the stop's lines, not just today's missing ones: a line can drop off the board at a later refresh.
+    state.schedules.set(stopId, await api.schedules(stopId, stop.lines.map(l => l.id)))
+    renderStopBody(stopId)
+  } catch {
+    // The quiet lines simply show without a time.
+  }
 }
 
 async function loadDisruptions() {
@@ -230,6 +266,7 @@ async function search() {
     heroes = res.heroes
     stops = res.stops
     state.departures.clear()
+    state.schedules.clear()
     state.openStops = new Set(shown([...heroes, ...stops]).slice(0, AUTO_LOADED_STOPS).map(s => s.id))
     renderTransit()
     renderVelib(res.velib)

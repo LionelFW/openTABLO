@@ -21,6 +21,7 @@ public sealed class ReferentialImporter(
         var lineRows = await idfm.GetLinesAsync(ct);
         var stopRows = await idfm.GetStopsAsync(ct);
         var stopLineRows = await idfm.GetStopLinesAsync(ct);
+        var zdcOfZda = (await idfm.GetStopZonesAsync(ct)).Where(r => r.ZdcId is not null).DistinctBy(r => r.ZdaId).ToDictionary(r => r.ZdaId, r => r.ZdcId!);
 
         var realtime = RealtimeLines();
         var lines = lineRows
@@ -47,6 +48,7 @@ public sealed class ReferentialImporter(
                 Location = Point(g.Average(r => r.GeoPoint!.Lat), g.Average(r => r.GeoPoint!.Lon)),
                 Town = g.Select(r => r.Town).FirstOrDefault(t => t is not null),
                 SearchName = SearchText.Normalize(g.First().Name ?? g.Key),
+                ZdcId = zdcOfZda.GetValueOrDefault(g.Key),
             });
 
         var stopAreaOfStop = stopRows.Where(r => r.ZdaId is not null).ToDictionary(r => r.ArrId, r => r.ZdaId!);

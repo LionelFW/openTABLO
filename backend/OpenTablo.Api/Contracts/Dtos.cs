@@ -10,6 +10,9 @@ public sealed record VelibStationDto(long Id, string Name, double Lat, double Lo
 /// <summary><paramref name="Heroes"/> are the nearest station of each Métro and RER/Train line close by, and of each mode further away; they are not repeated in <paramref name="Stops"/>.</summary>
 public sealed record NearbyResponse(int Radius, IReadOnlyList<StopAreaDto> Heroes, IReadOnlyList<StopAreaDto> Stops, IReadOnlyList<VelibStationDto> Velib);
 
+/// <summary>Next planned departure of a line at a stop, from the theoretical timetable.</summary>
+public sealed record ScheduledDto(string LineId, DateTimeOffset Planned);
+
 /// <summary>Expected time is absolute so clients can count down without polling.</summary>
 public sealed record DepartureDto(DateTimeOffset? Expected, bool AtStop, string? Status, string? Platform);
 
