@@ -57,10 +57,7 @@ public sealed class NearbyService(TabloDbContext db, VelibStatusService velibSta
             .ToListAsync(ct))
         .Select(s => new StopAreaDto(
             s.Id, s.Name, s.Type, s.Location.Y, s.Location.X, s.Distance,
-            s.Lines
-                .OrderBy(l => ModeOrder.Of(l.Mode)).ThenBy(l => l.Name.Length).ThenBy(l => l.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor))
-                .ToList()))
+            ModeOrder.Sort(s.Lines.Select(l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor)))))
         .ToList();
     }
 

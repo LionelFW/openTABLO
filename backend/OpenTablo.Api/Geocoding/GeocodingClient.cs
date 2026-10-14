@@ -14,7 +14,7 @@ public sealed class GeocodingClient(HttpClient http)
     const int MaxResults = 5;
     // The geocoder cannot filter on several departments, so ask for more and filter here.
     const int FetchedResults = 30;
-    static readonly HashSet<string> ServedDepartments = ["75", "92", "93", "94", "91", "78", "77", "60"];
+    static readonly HashSet<string> ServedDepartments = ["75", "92", "93", "94", "91", "95", "78", "77", "60"];
 
     public async Task<IReadOnlyList<AddressDto>> SearchAsync(string query, CancellationToken ct)
     {

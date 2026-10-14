@@ -18,7 +18,7 @@ public class GeocodingClientTests
             Feature("No code", null),
         ]));
 
-        Assert.Equal(["Rue de la Gare 75019 Paris", "Rue de la Gare 60200 Compiègne"], addresses.Select(a => a.Label));
+        Assert.Equal(["Rue de la Gare 75019 Paris", "Rue de la Gare 60200 Compiègne", "Rue de la Gare 95000 Cergy"], addresses.Select(a => a.Label));
     }
 
     [Fact]

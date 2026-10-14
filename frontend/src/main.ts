@@ -255,8 +255,8 @@ async function useLocation() {
   }
   if (onWelcome) {
     error.textContent = res.reason === 'denied'
-      ? "L'accès à la position a été refusé. Vous pouvez saisir une adresse ci-dessous, ou autoriser la localisation dans les réglages."
-      : 'Position indisponible pour le moment. Saisissez une adresse ci-dessous.'
+      ? "L'accès à la position a été refusé. Vous pouvez saisir une station ou une adresse ci-dessous, ou autoriser la localisation dans les réglages."
+      : 'Position indisponible pour le moment. Saisissez une station ou une adresse ci-dessous.'
     $('address-input').focus()
   } else {
     error.textContent = res.reason === 'denied'
@@ -271,6 +271,23 @@ $('relocate').addEventListener('click', useLocation)
 const addressInput = $<HTMLInputElement>('address-input')
 const addressList = $('address-results')
 
+/** Stations come with their lines; addresses do not. */
+type Suggestion = Address & { town?: string | null; lines?: Line[] }
+
+const MAX_SUGGESTED_LINES = 6
+
+function suggestionHtml(s: Suggestion, i: number): string {
+  if (!s.lines) return `<li role="option"><button type="button" data-i="${i}">${escapeHtml(s.label)}</button></li>`
+  // Métro, RER and Tram identify a station; its bus numbers would only crowd the row.
+  const heavy = s.lines.filter(l => l.mode !== 'bus')
+  const lines = heavy.length ? heavy : s.lines
+  const more = lines.length - MAX_SUGGESTED_LINES
+  return `<li role="option"><button type="button" class="station" data-i="${i}">
+    <span class="station-name">${escapeHtml(s.label)}${s.town ? `<small>${escapeHtml(s.town)}</small>` : ''}</span>
+    <span class="station-lines">${lines.slice(0, MAX_SUGGESTED_LINES).map(l => lineBadge(l, l.id)).join('')}${more > 0 ? `<span class="more">+${more}</span>` : ''}</span>
+  </button></li>`
+}
+
 function pickAddress(a: Address) {
   state.place = { lat: a.lat, lon: a.lon, label: a.label }
   localStorage.setItem(LAST_PLACE_KEY, JSON.stringify(state.place))
@@ -281,26 +298,29 @@ function pickAddress(a: Address) {
 let geocodeTimer: number | undefined
 let geocodeAbort: AbortController | undefined
 
-/** Fetches and lists suggestions for q; resolves to [] when a newer keystroke aborted it or the lookup failed. */
-async function suggest(q: string): Promise<Address[]> {
+/** Fetches and lists stations then addresses for q; resolves to [] when a newer keystroke aborted it or both lookups failed. */
+async function suggest(q: string): Promise<Suggestion[]> {
   geocodeAbort?.abort()
   const abort = geocodeAbort = new AbortController()
-  try {
-    const results = await api.geocode(q, abort.signal)
-    addressList.dataset.q = q
-    addressList.innerHTML = results.length
-      ? results.map((a, i) => `<li role="option"><button type="button" data-i="${i}">${escapeHtml(a.label)}</button></li>`).join('')
-      : `<li class="muted">Aucune adresse trouvée.</li>`
-    addressList.querySelectorAll<HTMLButtonElement>('button').forEach(b =>
-      b.addEventListener('click', () => pickAddress(results[Number(b.dataset.i)])))
-    return results
-  } catch {
-    if (!abort.signal.aborted) addressList.innerHTML = `<li class="muted">Recherche d'adresse indisponible. Vérifiez votre connexion.</li>`
+  // Either source alone is still useful, so one failing does not hide the other.
+  const [stations, addresses] = await Promise.allSettled([api.stations(q, abort.signal), api.geocode(q, abort.signal)])
+  if (abort.signal.aborted) return []
+  if (stations.status === 'rejected' && addresses.status === 'rejected') {
+    addressList.innerHTML = `<li class="muted">Recherche indisponible. Vérifiez votre connexion.</li>`
     return []
   }
+  const results: Suggestion[] = [
+    ...(stations.status === 'fulfilled' ? stations.value : []).map(s => ({ label: s.name, town: s.town, lat: s.lat, lon: s.lon, lines: s.lines })),
+    ...(addresses.status === 'fulfilled' ? addresses.value : []),
+  ]
+  addressList.dataset.q = q
+  addressList.innerHTML = results.length ? results.map(suggestionHtml).join('') : `<li class="muted">Aucune station ni adresse trouvée.</li>`
+  addressList.querySelectorAll<HTMLButtonElement>('button').forEach(b =>
+    b.addEventListener('click', () => pickAddress(results[Number(b.dataset.i)])))
+  return results
 }
 
-// Address autocomplete, debounced so typing does not flood the geocoder.
+// Station and address autocomplete, debounced so typing does not flood the geocoder.
 addressInput.addEventListener('input', () => {
   const q = addressInput.value.trim()
   clearTimeout(geocodeTimer)

@@ -42,7 +42,9 @@ builder.Services.AddHttpClient<IdfmOpenDataClient>((sp, http) =>
 {
     http.BaseAddress = new Uri(sp.GetRequiredService<IOptions<OpenDataOptions>>().Value.IdfmBaseUrl);
     http.Timeout = TimeSpan.FromMinutes(5);
-});
+})
+// The portal sometimes answers exports gzipped; asking for it explicitly makes that decodable, and smaller.
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All });
 builder.Services.AddHttpClient<VelibClient>((sp, http) =>
 {
     http.BaseAddress = new Uri(sp.GetRequiredService<IOptions<OpenDataOptions>>().Value.VelibBaseUrl);
@@ -59,6 +61,7 @@ builder.Services.AddScoped<DeparturesService>();
 builder.Services.AddScoped<DisruptionsService>();
 builder.Services.AddScoped<VelibStatusService>();
 builder.Services.AddScoped<NearbyService>();
+builder.Services.AddScoped<StationSearchService>();
 builder.Services.AddScoped<ReferentialImporter>();
 builder.Services.AddHostedService<ReferentialRefreshService>();
 

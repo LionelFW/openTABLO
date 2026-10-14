@@ -20,15 +20,16 @@ public sealed record IdfmStopRow(
     [property: JsonPropertyName("zdaid")] string? ZdaId,
     [property: JsonPropertyName("arrname")] string? Name,
     [property: JsonPropertyName("arrtype")] string? Type,
-    [property: JsonPropertyName("arrgeopoint")] IdfmGeoPoint? GeoPoint)
+    [property: JsonPropertyName("arrgeopoint")] IdfmGeoPoint? GeoPoint,
+    [property: JsonPropertyName("arrtown")] string? Town = null)
 {
     public const string Dataset = "arrets";
-    public const string Fields = "arrid,zdaid,arrname,arrtype,arrgeopoint";
+    public const string Fields = "arrid,zdaid,arrname,arrtype,arrgeopoint,arrtown";
 }
 
 public sealed record IdfmGeoPoint(double Lat, double Lon);
 
-/// <summary>Links a stop (IDFM:{arrid}) to a line (IDFM:{id_line}).</summary>
+/// <summary>Links a line (IDFM:{id_line}) to a stop (IDFM:{arrid}), or to a whole stop area (IDFM:monomodalStopPlace:{zdaid}) for rail.</summary>
 public sealed record IdfmStopLineRow(
     [property: JsonPropertyName("id")] string LineId,
     [property: JsonPropertyName("stop_id")] string StopId)

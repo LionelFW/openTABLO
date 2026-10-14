@@ -11,6 +11,8 @@ export interface DeparturesResponse { stopAreaId: string; fetchedAt: string; dep
 export interface Disruption { id: string; severity: string | null; cause: string | null; title: string | null; shortMessage: string | null; message: string | null; places: string[] }
 export interface LineDisruptions { lineId: string; disruptions: Disruption[] }
 export interface Address { label: string; lat: number; lon: number }
+/** A station found by name, all its modes merged. */
+export interface Station { name: string; town: string | null; lat: number; lon: number; lines: Line[] }
 
 export class ApiError extends Error {
   readonly status: number
@@ -42,5 +44,6 @@ export const api = {
     get<NearbyResponse>(`/nearby?lat=${round(lat)}&lon=${round(lon)}&radius=${radius}`),
   departures: (stopAreaId: string) => get<DeparturesResponse>(`/departures/${encodeURIComponent(stopAreaId)}`),
   disruptions: (lineIds: string[]) => get<LineDisruptions[]>(`/disruptions?lines=${lineIds.map(encodeURIComponent).join(',')}`),
+  stations: (q: string, signal?: AbortSignal) => get<Station[]>(`/stations?q=${encodeURIComponent(q)}`, signal),
   geocode: (q: string, signal?: AbortSignal) => get<Address[]>(`/geocode?q=${encodeURIComponent(q)}`, signal),
 }

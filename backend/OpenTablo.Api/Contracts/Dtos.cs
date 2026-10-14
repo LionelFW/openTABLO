@@ -23,4 +23,7 @@ public sealed record LineDisruptionsDto(string LineId, IReadOnlyList<DisruptionD
 
 public sealed record AddressDto(string Label, double Lat, double Lon);
 
+/// <summary>A station found by name: the stop areas of all its modes merged, with all their lines.</summary>
+public sealed record StationDto(string Name, string? Town, double Lat, double Lon, IReadOnlyList<LineDto> Lines);
+
 public sealed record PrimUsageDto(DateOnly Day, int Used, int Budget);

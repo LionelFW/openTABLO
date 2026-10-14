@@ -12,6 +12,7 @@ public static class TransitEndpoints
     public static RouteGroupBuilder MapTransitEndpoints(this RouteGroupBuilder api)
     {
         api.MapGet("/nearby", GetNearbyAsync);
+        api.MapGet("/stations", (string q, StationSearchService search, CancellationToken ct) => search.SearchAsync(q, ct));
         api.MapGet("/departures/{stopAreaId}", GetDeparturesAsync);
         api.MapGet("/disruptions", GetDisruptionsAsync);
         api.MapGet("/usage", (PrimQuota quota, CancellationToken ct) => quota.GetUsageAsync(ct));

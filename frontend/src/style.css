@@ -8,6 +8,10 @@
   src: url('./fonts/overpass.woff2') format('woff2');
   font-weight: 100 900;
   font-display: swap;
+  /* Overpass ships ascent .883 / descent .383 for a .70 cap height, so caps and digits sit .1em above
+     the centre of every box. Same total height, rebalanced so ascent - descent = cap height. */
+  ascent-override: 98.3%;
+  descent-override: 28.3%;
 }
 @font-face {
   font-family: Doto;
@@ -96,6 +100,11 @@ main { flex: 1; width: 100%; max-width: 720px; margin: 0 auto; padding: 20px 16p
 .suggestions button { width: 100%; text-align: left; padding: 12px 14px; border: 0; background: none; }
 .suggestions button:hover, .suggestions button:focus-visible { background: #eceefe; }
 .suggestions .muted { padding: 12px 14px; }
+.suggestions .station { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.station-name { display: flex; flex-direction: column; min-width: 0; font-weight: 700; }
+.station-name small { font-weight: 400; font-size: .8125rem; color: var(--muted); }
+.station-lines { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.station-lines .more { align-self: center; font-size: .8125rem; font-weight: 700; color: var(--muted); }
 
 .notice { margin: 12px 0; padding: 10px 12px; border-left: 4px solid var(--signal); background: #fff1f2; }
 .muted { color: var(--muted); }

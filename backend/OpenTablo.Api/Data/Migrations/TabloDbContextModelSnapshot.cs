@@ -78,6 +78,13 @@ namespace OpenTablo.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SearchName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Town")
+                        .HasColumnType("text");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("text");

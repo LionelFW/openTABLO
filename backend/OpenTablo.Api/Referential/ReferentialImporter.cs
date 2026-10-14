@@ -41,11 +41,13 @@ public sealed class ReferentialImporter(
                 Name = g.First().Name ?? g.Key,
                 Type = g.First().Type ?? "bus",
                 Location = Point(g.Average(r => r.GeoPoint!.Lat), g.Average(r => r.GeoPoint!.Lon)),
+                Town = g.Select(r => r.Town).FirstOrDefault(t => t is not null),
+                SearchName = SearchText.Normalize(g.First().Name ?? g.Key),
             });
 
         var stopAreaOfStop = stopRows.Where(r => r.ZdaId is not null).ToDictionary(r => r.ArrId, r => r.ZdaId!);
         foreach (var (zdaId, lineId) in stopLineRows
-            .Select(r => (Zda: stopAreaOfStop.GetValueOrDefault(StripPrefix(r.StopId)), Line: StripPrefix(r.LineId)))
+            .Select(r => (Zda: StopAreaOf(r.StopId, stopAreaOfStop), Line: StripPrefix(r.LineId)))
             .Where(x => x.Zda is not null)
             .Distinct())
         {
@@ -103,6 +105,15 @@ public sealed class ReferentialImporter(
     static Point Point(double lat, double lon) => new(lon, lat) { SRID = 4326 };
 
     static string StripPrefix(string id) => id.Replace("IDFM:", string.Empty);
+
+    const string StopAreaPrefix = "monomodalStopPlace:";
+
+    /// <summary>Rail lines are linked to the whole stop area, other modes to each stop of it.</summary>
+    public static string? StopAreaOf(string stopId, IReadOnlyDictionary<string, string> stopAreaOfStop)
+    {
+        var id = StripPrefix(stopId);
+        return id.StartsWith(StopAreaPrefix, StringComparison.Ordinal) ? id[StopAreaPrefix.Length..] : stopAreaOfStop.GetValueOrDefault(id);
+    }
 
     static string HexColor(string? hex, string fallback) => hex is { Length: 6 } ? "#" + hex.ToLowerInvariant() : fallback;
 }
