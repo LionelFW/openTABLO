@@ -254,13 +254,15 @@ async function useLocation() {
   error.hidden = true
   const buttons = [$<HTMLButtonElement>('use-location'), $<HTMLButtonElement>('relocate')]
   buttons.forEach(b => { b.disabled = true; b.setAttribute('aria-busy', 'true') })
+  const done = () => buttons.forEach(b => { b.disabled = false; b.removeAttribute('aria-busy') })
   const res = await locateOnce()
-  buttons.forEach(b => { b.disabled = false; b.removeAttribute('aria-busy') })
   if (res.ok) {
     localStorage.removeItem(LAST_PLACE_KEY) // the position now replaces the typed address on next start
     state.place = { lat: res.lat, lon: res.lon, label: 'Autour de vous' }
-    return search()
+    // Busy until the new stops show, so the button does not look done while the list is still the old one.
+    return search().finally(done)
   }
+  done()
   if (onWelcome) {
     error.textContent = res.reason === 'denied'
       ? "L'accès à la position a été refusé. Vous pouvez saisir une station ou une adresse ci-dessous, ou autoriser la localisation dans les réglages."
