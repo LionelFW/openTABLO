@@ -6,7 +6,8 @@ public sealed record StopAreaDto(string Id, string Name, string Type, double Lat
 
 public sealed record VelibStationDto(long Id, string Name, double Lat, double Lon, int Distance, int Mechanical, int Ebike, int Docks, bool Renting);
 
-public sealed record NearbyResponse(int Radius, IReadOnlyList<StopAreaDto> Stops, IReadOnlyList<VelibStationDto> Velib);
+/// <summary><paramref name="Heroes"/> are the nearest Métro and RER/Train stations; they are not repeated in <paramref name="Stops"/>.</summary>
+public sealed record NearbyResponse(int Radius, IReadOnlyList<StopAreaDto> Heroes, IReadOnlyList<StopAreaDto> Stops, IReadOnlyList<VelibStationDto> Velib);
 
 /// <summary>Expected time is absolute so clients can count down without polling.</summary>
 public sealed record DepartureDto(DateTimeOffset? Expected, bool AtStop, string? Status, string? Platform);

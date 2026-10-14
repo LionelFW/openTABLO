@@ -51,6 +51,12 @@
           <button role="tab" id="tab-velib" aria-controls="velib" aria-selected="false">Vélib'</button>
         </div>
 
+        <div id="mode-filter" class="chips" role="group" aria-label="Modes affichés">
+          <button type="button" data-mode="metro" aria-pressed="true">Métro</button>
+          <button type="button" data-mode="rail" aria-pressed="true">RER / Train</button>
+          <button type="button" data-mode="tram" aria-pressed="true">Tramway</button>
+          <button type="button" data-mode="bus" aria-pressed="true">Bus</button>
+        </div>
         <div id="transit" role="tabpanel" aria-labelledby="tab-transit"></div>
         <div id="velib" role="tabpanel" aria-labelledby="tab-velib" hidden></div>
       </section>

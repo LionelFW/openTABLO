@@ -157,3 +157,10 @@ main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px; }
   border-radius: 999px; background: var(--ratp-navy); color: #fff; font-size: .75rem;
 }
 .traffic .disruptions { padding: 0; }
+
+/* Mode filter chips and hero stations (nearest Métro / RER, always listed first). */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.chips button { border: 2px solid var(--ratp-navy); background: var(--surface); color: var(--ratp-navy); border-radius: 999px; padding: 6px 12px; font-weight: 700; font-size: .85rem; }
+.chips button[aria-pressed="true"] { background: var(--ratp-navy); color: #fff; }
+.stop.hero { border-left: 6px solid var(--ratp-jade); }
+.stop.hero .stop-name { font-size: 1.2rem; color: var(--ratp-navy); }

@@ -7,12 +7,14 @@ const AUTO_LOADED_STOPS = 3
 const DEPARTURES_REFRESH_MS = 60_000
 const COUNTDOWN_TICK_MS = 15_000
 const RADIUS_KEY = 'opentablo.radius'
+const HIDDEN_MODES_KEY = 'opentablo.hiddenModes'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
 const state = {
   place: null as { lat: number; lon: number; label: string } | null,
   radius: Number(localStorage.getItem(RADIUS_KEY)) || 400,
+  hiddenModes: new Set<string>(JSON.parse(localStorage.getItem(HIDDEN_MODES_KEY) ?? '[]')),
   openStops: new Set<string>(),
   departures: new Map<string, DepartureGroup[] | Error>(),
   disruptions: new Map<string, LineDisruptions['disruptions']>(),
@@ -105,10 +107,10 @@ function renderDisruptions(stop: StopArea): string {
     </details>`
 }
 
-function renderStop(stop: StopArea): string {
+function renderStop(stop: StopArea, hero = false): string {
   const open = state.openStops.has(stop.id)
   return `
-    <article class="stop" data-stop="${escapeHtml(stop.id)}">
+    <article class="stop${hero ? ' hero' : ''}" data-stop="${escapeHtml(stop.id)}">
       <button class="stop-head" aria-expanded="${open}" data-toggle="${escapeHtml(stop.id)}">
         <span class="stop-title">
           <span class="stop-name">${escapeHtml(stop.name)}</span>
@@ -121,17 +123,21 @@ function renderStop(stop: StopArea): string {
     </article>`
 }
 
+let heroes: StopArea[] = []
 let stops: StopArea[] = []
 
+const shown = (list: StopArea[]) => list.filter(s => !state.hiddenModes.has(s.type))
+
 function renderTransit() {
-  $('transit').innerHTML = stops.length
-    ? stops.map(renderStop).join('')
-    : `<p class="muted">Aucun arrêt dans ce rayon. Essayez un rayon plus grand.</p>`
+  const h = shown(heroes), s = shown(stops)
+  $('transit').innerHTML = h.length + s.length
+    ? h.map(x => renderStop(x, true)).join('') + s.map(x => renderStop(x)).join('')
+    : `<p class="muted">Aucun arrêt dans ce rayon. Essayez un rayon plus grand ou d'autres modes.</p>`
 }
 
 /** Updates one stop's departures without touching the rest (keeps open disruption details open). */
 function renderStopBody(stopId: string) {
-  const stop = stops.find(s => s.id === stopId)
+  const stop = [...heroes, ...stops].find(s => s.id === stopId)
   const body = document.querySelector(`[data-stop="${CSS.escape(stopId)}"] .stop-body`)
   if (stop && body) body.innerHTML = renderDepartures(stop)
 }
@@ -148,7 +154,7 @@ async function loadDepartures(stopId: string) {
 }
 
 async function loadDisruptions() {
-  const lineIds = [...new Set(stops.flatMap(s => s.lines.map(l => l.id)))]
+  const lineIds = [...new Set([...heroes, ...stops].flatMap(s => s.lines.map(l => l.id)))]
   if (lineIds.length === 0) return
   try {
     state.disruptions = new Map((await api.disruptions(lineIds.slice(0, 200))).map(l => [l.lineId, l.disruptions]))
@@ -184,9 +190,10 @@ async function search() {
 
   try {
     const res = await api.nearby(state.place.lat, state.place.lon, state.radius)
+    heroes = res.heroes
     stops = res.stops
     state.departures.clear()
-    state.openStops = new Set(stops.slice(0, AUTO_LOADED_STOPS).map(s => s.id))
+    state.openStops = new Set(shown([...heroes, ...stops]).slice(0, AUTO_LOADED_STOPS).map(s => s.id))
     renderTransit()
     renderVelib(res.velib)
     await Promise.all([...state.openStops].map(loadDepartures).concat(loadDisruptions()))
@@ -197,6 +204,7 @@ async function search() {
 
 function showWelcome() {
   state.place = null
+  heroes = []
   stops = []
   $('welcome').hidden = false
   $('results').hidden = true
@@ -257,6 +265,20 @@ radiusSelect.addEventListener('change', () => {
   search()
 })
 
+// Filtering is local: no new request, and hidden stops stop refreshing their departures.
+const modeButtons = document.querySelectorAll<HTMLButtonElement>('#mode-filter [data-mode]')
+modeButtons.forEach(b => {
+  b.setAttribute('aria-pressed', String(!state.hiddenModes.has(b.dataset.mode!)))
+  b.addEventListener('click', () => {
+    const mode = b.dataset.mode!
+    if (!state.hiddenModes.delete(mode)) state.hiddenModes.add(mode)
+    b.setAttribute('aria-pressed', String(!state.hiddenModes.has(mode)))
+    localStorage.setItem(HIDDEN_MODES_KEY, JSON.stringify([...state.hiddenModes]))
+    for (const s of [...heroes, ...stops]) if (state.hiddenModes.has(s.type)) state.openStops.delete(s.id)
+    renderTransit()
+  })
+})
+
 $('transit').addEventListener('click', e => {
   const id = (e.target as HTMLElement).closest<HTMLElement>('[data-toggle]')?.dataset.toggle
   if (!id) return
@@ -272,6 +294,7 @@ for (const [tab, panel] of [['tab-transit', 'transit'], ['tab-velib', 'velib']] 
       $(t).setAttribute('aria-selected', String(t === tab))
       $(p).hidden = p !== panel
     }
+    $('mode-filter').hidden = panel !== 'transit'
   })
 }
 

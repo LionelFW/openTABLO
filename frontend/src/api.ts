@@ -3,7 +3,8 @@
 export interface Line { id: string; name: string; mode: string; color: string; textColor: string }
 export interface StopArea { id: string; name: string; type: string; lat: number; lon: number; distance: number; lines: Line[] }
 export interface VelibStation { id: number; name: string; lat: number; lon: number; distance: number; mechanical: number; ebike: number; docks: number; renting: boolean }
-export interface NearbyResponse { radius: number; stops: StopArea[]; velib: VelibStation[] }
+/** heroes are the nearest Métro and RER/Train stations, never repeated in stops. */
+export interface NearbyResponse { radius: number; heroes: StopArea[]; stops: StopArea[]; velib: VelibStation[] }
 export interface Departure { expected: string | null; atStop: boolean; status: string | null; platform: string | null }
 export interface DepartureGroup { lineId: string; line: Line | null; destination: string; next: Departure[] }
 export interface DeparturesResponse { stopAreaId: string; fetchedAt: string; departures: DepartureGroup[] }
