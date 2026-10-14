@@ -11,11 +11,14 @@
   <body>
     <header class="topbar">
       <h1 class="brand"><span class="brand-mark" aria-hidden="true">T</span>openTABLO</h1>
-      <button id="change-place" class="link-button" hidden>Changer de lieu</button>
+      <div id="place-actions" class="topbar-actions" hidden>
+        <button id="relocate" class="link-button">Me localiser</button>
+        <button id="change-place" class="link-button">Changer de lieu</button>
+      </div>
     </header>
 
     <main id="app">
-      <section id="welcome" class="panel" aria-labelledby="welcome-title">
+      <section id="welcome" class="panel" aria-labelledby="welcome-title" hidden>
         <h2 id="welcome-title">Les transports autour de vous</h2>
         <p>
           Prochains passages, info trafic et Vélib disponibles près d'un lieu.
@@ -46,9 +49,11 @@
           </label>
         </div>
 
+        <p id="relocate-error" class="notice" role="alert" hidden></p>
+
         <div class="tabs" role="tablist">
           <button role="tab" id="tab-transit" aria-controls="transit" aria-selected="true">Transports</button>
-          <button role="tab" id="tab-velib" aria-controls="velib" aria-selected="false">Vélib'</button>
+          <button role="tab" id="tab-velib" aria-controls="velib" aria-selected="false" tabindex="-1">Vélib'</button>
         </div>
 
         <div id="mode-filter" class="chips" role="group" aria-label="Modes affichés">
@@ -57,6 +62,7 @@
           <button type="button" data-mode="tram" aria-pressed="true">Tramway</button>
           <button type="button" data-mode="bus" aria-pressed="true">Bus</button>
         </div>
+        <p id="radius-note" class="hint">Les métros et RER les plus proches sont affichés peu importe le rayon sélectionné.</p>
         <div id="transit" role="tabpanel" aria-labelledby="tab-transit"></div>
         <div id="velib" role="tabpanel" aria-labelledby="tab-velib" hidden></div>
       </section>

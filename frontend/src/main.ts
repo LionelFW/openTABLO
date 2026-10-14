@@ -1,6 +1,6 @@
 import './style.css'
-import { api, ApiError, type DepartureGroup, type Disruption, type LineDisruptions, type StopArea, type VelibStation, type Line } from './api'
-import { locateOnce } from './location'
+import { api, ApiError, type Address, type DeparturesResponse, type Disruption, type LineDisruptions, type StopArea, type VelibStation, type Line } from './api'
+import { locateOnce, locationGranted } from './location'
 
 /** Stops whose departures load automatically; others load on demand to save the PRIM quota. */
 const AUTO_LOADED_STOPS = 3
@@ -8,6 +8,7 @@ const DEPARTURES_REFRESH_MS = 60_000
 const COUNTDOWN_TICK_MS = 15_000
 const RADIUS_KEY = 'opentablo.radius'
 const HIDDEN_MODES_KEY = 'opentablo.hiddenModes'
+const LAST_PLACE_KEY = 'opentablo.lastPlace'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
@@ -16,7 +17,7 @@ const state = {
   radius: Number(localStorage.getItem(RADIUS_KEY)) || 400,
   hiddenModes: new Set<string>(JSON.parse(localStorage.getItem(HIDDEN_MODES_KEY) ?? '[]')),
   openStops: new Set<string>(),
-  departures: new Map<string, DepartureGroup[] | Error>(),
+  departures: new Map<string, DeparturesResponse | Error>(),
   disruptions: new Map<string, LineDisruptions['disruptions']>(),
 }
 
@@ -36,7 +37,7 @@ function lineBadge(line: Line | null, fallbackId: string): string {
   if (!line) return `<span class="badge badge-bus" style="--c:#6e6e6e;--t:#fff">${escapeHtml(fallbackId)}</span>`
   const mode = ['metro', 'rail', 'tram'].includes(line.mode) ? line.mode : 'bus'
   const label = `${MODE_LABEL[line.mode] ?? 'Ligne'} ${line.name}`
-  return `<span class="badge badge-${mode}" style="--c:${line.color};--t:${line.textColor}" role="img" aria-label="${escapeHtml(label)}">${escapeHtml(line.name)}</span>`
+  return `<span class="badge badge-${mode}" style="--c:${escapeHtml(line.color)};--t:${escapeHtml(line.textColor)}" role="img" aria-label="${escapeHtml(label)}">${escapeHtml(line.name)}</span>`
 }
 
 function minutesLabel(expected: string | null, atStop: boolean): { text: string; sr: string; cls: string } {
@@ -45,6 +46,11 @@ function minutesLabel(expected: string | null, atStop: boolean): { text: string;
   const min = Math.floor((new Date(expected).getTime() - Date.now()) / 60_000)
   if (min <= 0) return { text: "À l'approche", sr: "à l'approche", cls: 'now' }
   return { text: `${min}<small>min</small>`, sr: `dans ${min} minutes`, cls: '' }
+}
+
+function updatedLabel(fetchedAt: string) {
+  const min = Math.floor((Date.now() - Date.parse(fetchedAt)) / 60_000)
+  return min < 1 ? "Mis à jour à l'instant" : `Mis à jour il y a ${min} min`
 }
 
 function formatDistance(m: number) {
@@ -58,9 +64,13 @@ function renderDepartures(stop: StopArea): string {
   if (!state.openStops.has(stop.id)) return ''
   if (data === undefined) return `<p class="muted">Chargement des prochains passages…</p>`
   if (data instanceof Error) return `<p class="notice">${escapeHtml(data.message)}</p>`
-  if (data.length === 0) return `<p class="muted">Aucun passage prévu dans les deux prochaines heures.</p>`
+  // Cached data can be a minute old, or older after a failed refresh: drop trains already gone.
+  const groups = data.departures
+    .map(g => ({ ...g, next: g.next.filter(d => d.atStop || !d.expected || Date.parse(d.expected) > Date.now() - 60_000) }))
+    .filter(g => g.next.length > 0)
+  if (groups.length === 0) return `<p class="muted">Aucun passage prévu dans les deux prochaines heures.</p>`
 
-  return `<ul class="departures">${data.map(g => `
+  return `<ul class="departures">${groups.map(g => `
     <li class="departure">
       ${lineBadge(g.line, g.lineId)}
       <span class="destination">${escapeHtml(g.destination)}</span>
@@ -68,7 +78,8 @@ function renderDepartures(stop: StopArea): string {
         const t = minutesLabel(d.expected, d.atStop)
         return `<span class="time ${t.cls}" aria-label="${t.sr}">${t.text}</span>`
       }).join('')}</span>
-    </li>`).join('')}</ul>`
+    </li>`).join('')}</ul>
+    <p class="updated">${updatedLabel(data.fetchedAt)}</p>`
 }
 
 const SEVERITY_RANK: Record<string, number> = { BLOQUANTE: 0, PERTURBEE: 1, INFORMATION: 2 }
@@ -82,7 +93,7 @@ function lineStatus(line: Line): string | null {
 
 function lineWithStatus(line: Line): string {
   const status = lineStatus(line)
-  return status ? `<span class="status-wrap">${lineBadge(line, line.id)}<span class="status-dot sev-${status.toLowerCase()}" aria-label="trafic ${status === 'BLOQUANTE' ? 'interrompu' : status === 'PERTURBEE' ? 'perturbé' : 'info'}"></span></span>` : lineBadge(line, line.id)
+  return status ? `<span class="status-wrap">${lineBadge(line, line.id)}<span class="status-dot sev-${escapeHtml(status.toLowerCase())}" role="img" aria-label="trafic ${status === 'BLOQUANTE' ? 'interrompu' : status === 'PERTURBEE' ? 'perturbé' : 'info'}"></span></span>` : lineBadge(line, line.id)
 }
 
 /** Traffic info for the stop's lines, collapsed by default: PRIM reports issues anywhere on a line. */
@@ -98,9 +109,10 @@ function renderDisruptions(stop: StopArea): string {
     <details class="traffic">
       <summary>Info trafic <span class="traffic-count">${items.length}</span></summary>
       <ul class="disruptions">${items.map(({ line, d }) => `
-        <li class="disruption sev-${severityOf(d).toLowerCase()}">
+        <li class="disruption sev-${escapeHtml(severityOf(d).toLowerCase())}">
           <details>
-            <summary>${lineBadge(line, line.id)} <span>${escapeHtml(d.title ?? d.shortMessage ?? 'Info trafic')}</span></summary>
+            <summary>${lineBadge(line, line.id)} <span>${escapeHtml(d.title ?? d.shortMessage ?? 'Info trafic')}${d.places.length
+              ? `<small class="places">${escapeHtml(d.places.join(', '))}</small>` : ''}</span></summary>
             <p>${escapeHtml(htmlToText(d.message ?? d.shortMessage ?? ''))}</p>
           </details>
         </li>`).join('')}</ul>
@@ -114,7 +126,7 @@ function renderStop(stop: StopArea, hero = false): string {
       <button class="stop-head" aria-expanded="${open}" data-toggle="${escapeHtml(stop.id)}">
         <span class="stop-title">
           <span class="stop-name">${escapeHtml(stop.name)}</span>
-          <span class="stop-meta">${MODE_LABEL[stop.type] ?? stop.type} · ${formatDistance(stop.distance)}</span>
+          <span class="stop-meta">${MODE_LABEL[stop.type] ?? escapeHtml(stop.type)}, à ${formatDistance(stop.distance)}</span>
         </span>
         <span class="stop-lines">${stop.lines.map(lineWithStatus).join('')}</span>
       </button>
@@ -144,8 +156,10 @@ function renderStopBody(stopId: string) {
 
 async function loadDepartures(stopId: string) {
   try {
-    state.departures.set(stopId, (await api.departures(stopId)).departures)
+    state.departures.set(stopId, await api.departures(stopId))
   } catch (e) {
+    const previous = state.departures.get(stopId)
+    if (previous && !(previous instanceof Error)) return // keep the last good data on a failed refresh
     state.departures.set(stopId, e instanceof ApiError && e.status === 429
       ? new Error('Quota de données temps réel atteint, réessayez plus tard.')
       : new Error('Prochains passages indisponibles.'))
@@ -154,10 +168,13 @@ async function loadDepartures(stopId: string) {
 }
 
 async function loadDisruptions() {
+  const id = searchId
   const lineIds = [...new Set([...heroes, ...stops].flatMap(s => s.lines.map(l => l.id)))]
   if (lineIds.length === 0) return
   try {
-    state.disruptions = new Map((await api.disruptions(lineIds.slice(0, 200))).map(l => [l.lineId, l.disruptions]))
+    const res = await api.disruptions(lineIds.slice(0, 200))
+    if (id !== searchId) return
+    state.disruptions = new Map(res.map(l => [l.lineId, l.disruptions]))
     renderTransit()
   } catch { /* traffic info is optional; departures still show */ }
 }
@@ -168,7 +185,7 @@ function renderVelib(stations: VelibStation[]) {
   $('velib').innerHTML = stations.length
     ? `<ul class="velib-list">${stations.map(s => `
         <li class="velib ${s.renting ? '' : 'closed'}">
-          <span class="velib-name">${escapeHtml(s.name)}<small>${formatDistance(s.distance)}${s.renting ? '' : ' · hors service'}</small></span>
+          <span class="velib-name">${escapeHtml(s.name)}<small>À ${formatDistance(s.distance)}${s.renting ? '' : ', hors service'}</small></span>
           <span class="velib-counts">
             <span class="count mech" aria-label="${s.mechanical} vélos mécaniques"><b>${s.mechanical}</b> méca.</span>
             <span class="count ebike" aria-label="${s.ebike} vélos électriques"><b>${s.ebike}</b> élec.</span>
@@ -180,16 +197,22 @@ function renderVelib(stations: VelibStation[]) {
 
 // ---------- Flow ----------
 
+/** Bumped on every search so a slow, superseded response never overwrites a newer one. */
+let searchId = 0
+
 async function search() {
   if (!state.place) return
+  const id = ++searchId
   $('welcome').hidden = true
   $('results').hidden = false
-  $('change-place').hidden = false
+  $('place-actions').hidden = false
+  $('relocate-error').hidden = true
   $('place-label').textContent = state.place.label
   $('transit').innerHTML = `<p class="muted">Recherche des arrêts…</p>`
 
   try {
     const res = await api.nearby(state.place.lat, state.place.lon, state.radius)
+    if (id !== searchId) return
     heroes = res.heroes
     stops = res.stops
     state.departures.clear()
@@ -198,61 +221,104 @@ async function search() {
     renderVelib(res.velib)
     await Promise.all([...state.openStops].map(loadDepartures).concat(loadDisruptions()))
   } catch {
+    if (id !== searchId) return
     $('transit').innerHTML = `<p class="notice">Impossible de charger les arrêts. Vérifiez votre connexion.</p>`
   }
 }
 
 function showWelcome() {
+  localStorage.removeItem(LAST_PLACE_KEY)
   state.place = null
+  searchId++
+  addressInput.value = ''
+  addressList.innerHTML = ''
   heroes = []
   stops = []
   $('welcome').hidden = false
   $('results').hidden = true
-  $('change-place').hidden = true
+  $('place-actions').hidden = true
 }
 
-$('use-location').addEventListener('click', async () => {
-  const error = $('location-error')
+/** Works from the welcome screen and, as a position refresh, from the stops display. */
+async function useLocation() {
+  const onWelcome = !$('welcome').hidden
+  const error = $(onWelcome ? 'location-error' : 'relocate-error')
   error.hidden = true
+  const buttons = [$<HTMLButtonElement>('use-location'), $<HTMLButtonElement>('relocate')]
+  buttons.forEach(b => { b.disabled = true; b.setAttribute('aria-busy', 'true') })
   const res = await locateOnce()
+  buttons.forEach(b => { b.disabled = false; b.removeAttribute('aria-busy') })
   if (res.ok) {
+    localStorage.removeItem(LAST_PLACE_KEY) // the position now replaces the typed address on next start
     state.place = { lat: res.lat, lon: res.lon, label: 'Autour de vous' }
     return search()
   }
-  error.textContent = res.reason === 'denied'
-    ? "L'accès à la position a été refusé. Vous pouvez saisir une adresse ci-dessous, ou autoriser la localisation dans les réglages."
-    : 'Position indisponible pour le moment. Saisissez une adresse ci-dessous.'
+  if (onWelcome) {
+    error.textContent = res.reason === 'denied'
+      ? "L'accès à la position a été refusé. Vous pouvez saisir une adresse ci-dessous, ou autoriser la localisation dans les réglages."
+      : 'Position indisponible pour le moment. Saisissez une adresse ci-dessous.'
+    $('address-input').focus()
+  } else {
+    error.textContent = res.reason === 'denied'
+      ? "L'accès à la position a été refusé. Autorisez la localisation dans les réglages."
+      : 'Position indisponible pour le moment.'
+  }
   error.hidden = false
-  $('address-input').focus()
-})
+}
+$('use-location').addEventListener('click', useLocation)
+$('relocate').addEventListener('click', useLocation)
 
-// Address autocomplete, debounced so typing does not flood the geocoder.
+const addressInput = $<HTMLInputElement>('address-input')
+const addressList = $('address-results')
+
+function pickAddress(a: Address) {
+  state.place = { lat: a.lat, lon: a.lon, label: a.label }
+  localStorage.setItem(LAST_PLACE_KEY, JSON.stringify(state.place))
+  addressList.innerHTML = ''
+  search()
+}
+
 let geocodeTimer: number | undefined
 let geocodeAbort: AbortController | undefined
-$('address-input').addEventListener('input', e => {
-  const q = (e.target as HTMLInputElement).value.trim()
+
+/** Fetches and lists suggestions for q; resolves to [] when a newer keystroke aborted it or the lookup failed. */
+async function suggest(q: string): Promise<Address[]> {
+  geocodeAbort?.abort()
+  const abort = geocodeAbort = new AbortController()
+  try {
+    const results = await api.geocode(q, abort.signal)
+    addressList.dataset.q = q
+    addressList.innerHTML = results.length
+      ? results.map((a, i) => `<li role="option"><button type="button" data-i="${i}">${escapeHtml(a.label)}</button></li>`).join('')
+      : `<li class="muted">Aucune adresse trouvée.</li>`
+    addressList.querySelectorAll<HTMLButtonElement>('button').forEach(b =>
+      b.addEventListener('click', () => pickAddress(results[Number(b.dataset.i)])))
+    return results
+  } catch {
+    if (!abort.signal.aborted) addressList.innerHTML = `<li class="muted">Recherche d'adresse indisponible. Vérifiez votre connexion.</li>`
+    return []
+  }
+}
+
+// Address autocomplete, debounced so typing does not flood the geocoder.
+addressInput.addEventListener('input', () => {
+  const q = addressInput.value.trim()
   clearTimeout(geocodeTimer)
   geocodeAbort?.abort()
-  const list = $('address-results')
-  if (q.length < 3) { list.innerHTML = ''; return }
-  geocodeTimer = window.setTimeout(async () => {
-    geocodeAbort = new AbortController()
-    try {
-      const results = await api.geocode(q, geocodeAbort.signal)
-      list.innerHTML = results.map((a, i) =>
-        `<li role="option"><button type="button" data-i="${i}">${escapeHtml(a.label)}</button></li>`).join('')
-      list.querySelectorAll<HTMLButtonElement>('button').forEach(b => b.addEventListener('click', () => {
-        const a = results[Number(b.dataset.i)]
-        state.place = { lat: a.lat, lon: a.lon, label: a.label }
-        list.innerHTML = ''
-        search()
-      }))
-    } catch { /* aborted or offline: keep previous suggestions */ }
-  }, 300)
+  if (q.length < 3) { addressList.innerHTML = ''; return }
+  geocodeTimer = window.setTimeout(() => suggest(q), 300)
 })
-$('address-form').addEventListener('submit', e => {
+
+// Enter picks the first suggestion, fetching it first if the list is missing or was for an older text.
+$('address-form').addEventListener('submit', async e => {
   e.preventDefault()
-  $('address-results').querySelector<HTMLButtonElement>('button')?.click()
+  clearTimeout(geocodeTimer)
+  const q = addressInput.value.trim()
+  if (q.length < 3) return
+  const current = addressList.dataset.q === q ? addressList.querySelector<HTMLButtonElement>('button') : null
+  if (current) return current.click()
+  const [first] = await suggest(q)
+  if (first) pickAddress(first)
 })
 
 $('change-place').addEventListener('click', showWelcome)
@@ -279,27 +345,63 @@ modeButtons.forEach(b => {
   })
 })
 
+// Toggles one stop in place, so traffic details opened elsewhere stay open.
 $('transit').addEventListener('click', e => {
-  const id = (e.target as HTMLElement).closest<HTMLElement>('[data-toggle]')?.dataset.toggle
-  if (!id) return
-  if (state.openStops.delete(id)) return renderTransit()
-  state.openStops.add(id)
-  renderTransit()
-  if (!state.departures.has(id)) loadDepartures(id)
+  const head = (e.target as HTMLElement).closest<HTMLElement>('[data-toggle]')
+  const id = head?.dataset.toggle
+  if (!head || !id) return
+  const open = !state.openStops.delete(id)
+  if (open) state.openStops.add(id)
+  head.setAttribute('aria-expanded', String(open))
+  renderStopBody(id)
+  if (open && !state.departures.has(id)) loadDepartures(id)
 })
 
-for (const [tab, panel] of [['tab-transit', 'transit'], ['tab-velib', 'velib']] as const) {
-  $(tab).addEventListener('click', () => {
-    for (const [t, p] of [['tab-transit', 'transit'], ['tab-velib', 'velib']] as const) {
-      $(t).setAttribute('aria-selected', String(t === tab))
-      $(p).hidden = p !== panel
-    }
-    $('mode-filter').hidden = panel !== 'transit'
+const TABS = [['tab-transit', 'transit'], ['tab-velib', 'velib']] as const
+
+function selectTab(index: number) {
+  TABS.forEach(([t, p], i) => {
+    $(t).setAttribute('aria-selected', String(i === index))
+    $(t).tabIndex = i === index ? 0 : -1
+    $(p).hidden = i !== index
   })
+  $('mode-filter').hidden = $('radius-note').hidden = TABS[index][1] !== 'transit'
 }
+
+TABS.forEach(([t], i) => {
+  $(t).addEventListener('click', () => selectTab(i))
+  // Standard tablist keys: arrows move between tabs, only the selected one is in the Tab order.
+  $(t).addEventListener('keydown', e => {
+    const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+    if (!step) return
+    const next = (i + step + TABS.length) % TABS.length
+    selectTab(next)
+    $(TABS[next][0]).focus()
+  })
+})
 
 // Countdowns update locally from absolute times; only open stops are refreshed, and only while visible.
 setInterval(() => state.openStops.forEach(renderStopBody), COUNTDOWN_TICK_MS)
-setInterval(() => {
-  if (document.visibilityState === 'visible' && state.place) state.openStops.forEach(loadDepartures)
-}, DEPARTURES_REFRESH_MS)
+let lastRefresh = Date.now()
+function refreshOpenStops() {
+  if (document.visibilityState !== 'visible' || !state.place) return
+  lastRefresh = Date.now()
+  state.openStops.forEach(loadDepartures)
+}
+setInterval(refreshOpenStops, DEPARTURES_REFRESH_MS)
+// Back from the background: times may be minutes old, so refresh now instead of waiting for the next tick.
+document.addEventListener('visibilitychange', () => {
+  if (Date.now() - lastRefresh > DEPARTURES_REFRESH_MS / 2) refreshOpenStops()
+})
+
+// Start where the user left off: their last typed address, else their position if location is already allowed.
+const lastPlace = (() => { try { return JSON.parse(localStorage.getItem(LAST_PLACE_KEY) ?? 'null') } catch { return null } })()
+if (lastPlace) {
+  state.place = lastPlace
+  search()
+} else {
+  locationGranted().then(granted => {
+    $('welcome').hidden = false
+    if (granted) useLocation()
+  })
+}

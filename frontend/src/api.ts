@@ -8,7 +8,7 @@ export interface NearbyResponse { radius: number; heroes: StopArea[]; stops: Sto
 export interface Departure { expected: string | null; atStop: boolean; status: string | null; platform: string | null }
 export interface DepartureGroup { lineId: string; line: Line | null; destination: string; next: Departure[] }
 export interface DeparturesResponse { stopAreaId: string; fetchedAt: string; departures: DepartureGroup[] }
-export interface Disruption { id: string; severity: string | null; cause: string | null; title: string | null; shortMessage: string | null; message: string | null }
+export interface Disruption { id: string; severity: string | null; cause: string | null; title: string | null; shortMessage: string | null; message: string | null; places: string[] }
 export interface LineDisruptions { lineId: string; disruptions: Disruption[] }
 export interface Address { label: string; lat: number; lon: number }
 
@@ -24,7 +24,9 @@ export class ApiError extends Error {
 const base = import.meta.env.VITE_API_BASE ?? ''
 
 async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(`${base}/api${path}`, { signal })
+  // Without a timeout a stalled mobile connection leaves the "loading" text up forever.
+  // Geocoding keeps its own signal: it is aborted by the next keystroke anyway.
+  const res = await fetch(`${base}/api${path}`, { signal: signal ?? AbortSignal.timeout(15_000) })
   if (!res.ok) {
     const body = await res.json().catch(() => null)
     throw new ApiError(res.status, body?.title ?? `Erreur ${res.status}`)
