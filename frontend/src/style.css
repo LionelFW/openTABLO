@@ -202,7 +202,8 @@ main { flex: 1; width: 100%; max-width: 720px; margin: 0 auto; padding: 20px 16p
 .velib-list { list-style: none; margin: 0; padding: 0; }
 .velib { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
 .velib.closed { opacity: .55; }
-.velib-name { font-weight: 700; display: flex; flex-direction: column; min-width: 0; }
+.velib-name { font-weight: 700; display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; }
+.velib-name:hover { text-decoration: underline; }
 .velib-name small { font-weight: 400; font-size: .875rem; color: var(--muted); }
 .velib-counts { display: flex; gap: 16px; }
 .count { display: flex; flex-direction: column; align-items: center; min-width: 44px; font-size: .75rem; color: var(--muted); }

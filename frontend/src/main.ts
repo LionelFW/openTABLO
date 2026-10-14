@@ -1,6 +1,7 @@
 import './style.css'
 import { api, ApiError, type Address, type DeparturesResponse, type Disruption, type LineDisruptions, type StopArea, type VelibStation, type Line } from './api'
 import { locateOnce, locationGranted } from './location'
+import { Capacitor } from '@capacitor/core'
 
 /** Stops whose departures load automatically; others load on demand to save the PRIM quota. */
 const AUTO_LOADED_STOPS = 3
@@ -181,11 +182,18 @@ async function loadDisruptions() {
 
 // ---------- Vélib ----------
 
+/** Walking directions in the phone's map app: Apple Plans on iOS, Google Maps (app or web) elsewhere. */
+function directionsUrl(lat: number, lon: number) {
+  return Capacitor.getPlatform() === 'ios' || /iPhone|iPad|iPod/.test(navigator.userAgent)
+    ? `maps://?daddr=${lat},${lon}&dirflg=w`
+    : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=walking`
+}
+
 function renderVelib(stations: VelibStation[]) {
   $('velib').innerHTML = stations.length
     ? `<ul class="velib-list">${stations.map(s => `
         <li class="velib ${s.renting ? '' : 'closed'}">
-          <span class="velib-name">${escapeHtml(s.name)}<small>À ${formatDistance(s.distance)}${s.renting ? '' : ', hors service'}</small></span>
+          <a class="velib-name" href="${directionsUrl(s.lat, s.lon)}" target="_blank" rel="noopener" title="Itinéraire à pied">${escapeHtml(s.name)}<small>À ${formatDistance(s.distance)}${s.renting ? '' : ', hors service'}</small></a>
           <span class="velib-counts">
             <span class="count mech" aria-label="${s.mechanical} vélos mécaniques"><b>${s.mechanical}</b> méca.</span>
             <span class="count ebike" aria-label="${s.ebike} vélos électriques"><b>${s.ebike}</b> élec.</span>
