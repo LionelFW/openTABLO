@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using OpenTablo.Api.Data;
@@ -20,6 +22,7 @@ public sealed class ReferentialImporter(
         var stopRows = await idfm.GetStopsAsync(ct);
         var stopLineRows = await idfm.GetStopLinesAsync(ct);
 
+        var realtime = RealtimeLines();
         var lines = lineRows
             .GroupBy(r => r.IdLine)
             .Select(g => g.First())
@@ -30,6 +33,7 @@ public sealed class ReferentialImporter(
                 Mode = r.TransportMode ?? "bus",
                 Color = HexColor(r.Colour, DefaultColor),
                 TextColor = HexColor(r.TextColour, "#ffffff"),
+                HasRealtime = realtime?.Contains(r.IdLine) ?? true,
             });
 
         var stopAreas = stopRows
@@ -64,6 +68,21 @@ public sealed class ReferentialImporter(
         }, ct);
         logger.LogInformation("Imported {StopAreas} stop areas and {Lines} lines", stopAreas.Count, lines.Count);
     }
+
+    /// <summary>
+    /// Lines PRIM has real-time data for. realtime-lines.json is a manual export, made while logged in to the IDFM portal:
+    /// datasets/perimetre-des-donnees-tr-disponibles-plateforme-idfm/exports/json?select=line,name_line,count(*) as stops&amp;group_by=line,name_line&amp;order_by=line
+    /// Null when the file is absent, so that no line is marked as lacking real time.
+    /// </summary>
+    static HashSet<string>? RealtimeLines()
+    {
+        using var stream = typeof(ReferentialImporter).Assembly.GetManifestResourceStream("realtime-lines.json");
+        if (stream is null) return null;
+        var rows = JsonSerializer.Deserialize<List<RealtimeLineRow>>(stream) ?? [];
+        return rows.Select(r => r.Line.Split(':', StringSplitOptions.RemoveEmptyEntries)[^1]).ToHashSet(); // "STIF:Line::C01371:"
+    }
+
+    sealed record RealtimeLineRow([property: JsonPropertyName("line")] string Line);
 
     public async Task ImportVelibAsync(CancellationToken ct)
     {

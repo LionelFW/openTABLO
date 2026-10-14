@@ -5,9 +5,9 @@ import { defineConfig, type Plugin } from 'vite'
  * are generated here. Nearby, stations and geocoding are free and still go to the API.
  */
 function mockPrim(): Plugin {
-  const metro1 = { id: 'C01371', name: '1', mode: 'metro', color: '#ffbe00', textColor: '#000000' }
-  const rerA = { id: 'C01742', name: 'A', mode: 'rail', color: '#eb2132', textColor: '#ffffff' }
-  const bus20 = { id: 'C01077', name: '20', mode: 'bus', color: '#9b9842', textColor: '#ffffff' }
+  const metro1 = { id: 'C01371', name: '1', mode: 'metro', color: '#ffbe00', textColor: '#000000', realtime: true }
+  const rerA = { id: 'C01742', name: 'A', mode: 'rail', color: '#eb2132', textColor: '#ffffff', realtime: true }
+  const bus20 = { id: 'C01077', name: '20', mode: 'bus', color: '#9b9842', textColor: '#ffffff', realtime: true }
   const at = (min: number) => new Date(Date.now() + min * 60_000).toISOString()
   const next = (...mins: number[]) => mins.map(m => ({ expected: at(m), atStop: m === 0, status: null, platform: null }))
 

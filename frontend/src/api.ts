@@ -1,6 +1,7 @@
 // Mirrors backend/OpenTablo.Api/Contracts/Dtos.cs.
 
-export interface Line { id: string; name: string; mode: string; color: string; textColor: string }
+/** realtime is false for lines PRIM never has departures for. */
+export interface Line { id: string; name: string; mode: string; color: string; textColor: string; realtime: boolean }
 export interface StopArea { id: string; name: string; type: string; lat: number; lon: number; distance: number; lines: Line[] }
 export interface VelibStation { id: number; name: string; lat: number; lon: number; distance: number; mechanical: number; ebike: number; docks: number; renting: boolean }
 /** heroes are the nearest Métro and RER/Train stations, never repeated in stops. */

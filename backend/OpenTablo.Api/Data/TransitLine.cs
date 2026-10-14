@@ -8,5 +8,7 @@ public class TransitLine
     public required string Mode { get; set; }
     public required string Color { get; set; }
     public required string TextColor { get; set; }
+    /// <summary>False when PRIM publishes no real-time departures for this line at all.</summary>
+    public bool HasRealtime { get; set; } = true;
     public List<StopArea> StopAreas { get; set; } = [];
 }

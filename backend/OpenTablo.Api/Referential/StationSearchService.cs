@@ -30,7 +30,7 @@ public sealed class StationSearchService(TabloDbContext db)
             .ToListAsync(ct);
 
         return Merge(candidates.Select(c => new StationDto(c.Name, c.Town, c.Location.Y, c.Location.X,
-            c.Lines.Select(l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor)).ToList())), MaxResults);
+            c.Lines.Select(l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor, l.HasRealtime)).ToList())), MaxResults);
     }
 
     /// <summary>Merges ranked stop areas lying close to a better-ranked one into it, keeping its name and position.</summary>

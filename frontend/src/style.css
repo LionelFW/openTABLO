@@ -166,6 +166,8 @@ main { flex: 1; width: 100%; max-width: 720px; margin: 0 auto; padding: 20px 16p
 .time small { font: 600 .75rem Overpass, sans-serif; margin-left: 2px; }
 .time.now { font: 800 .875rem/1.1 Overpass, sans-serif; align-self: center; animation: arrive 1.2s steps(2, jump-none) 2; }
 @keyframes arrive { 50% { opacity: .2; } }
+.quiet-lines { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; color: var(--muted); font-size: .875rem; }
+.quiet-lines li { display: flex; align-items: center; gap: 10px; }
 .updated { margin: 6px 0 0; color: var(--muted); font-size: .75rem; text-align: right; }
 
 /* Line pictograms, shaped per mode like on IDFM signage. */

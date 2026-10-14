@@ -1,6 +1,7 @@
 namespace OpenTablo.Api.Contracts;
 
-public sealed record LineDto(string Id, string Name, string Mode, string Color, string TextColor);
+/// <summary><paramref name="Realtime"/> is false when PRIM never has departures for this line.</summary>
+public sealed record LineDto(string Id, string Name, string Mode, string Color, string TextColor, bool Realtime = true);
 
 public sealed record StopAreaDto(string Id, string Name, string Type, double Lat, double Lon, int Distance, IReadOnlyList<LineDto> Lines);
 

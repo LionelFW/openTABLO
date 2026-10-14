@@ -107,6 +107,9 @@ namespace OpenTablo.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("HasRealtime")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Mode")
                         .IsRequired()
                         .HasColumnType("text");

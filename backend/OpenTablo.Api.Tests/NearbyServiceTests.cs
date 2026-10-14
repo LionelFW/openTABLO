@@ -27,4 +27,13 @@ public class NearbyServiceTests
         Assert.Equal(["M1", "M2", "R", "T", "B"], NearbyService.ByMode([
             Stop("B", "bus", 10), Stop("M2", "metro", 300), Stop("R", "rail", 120), Stop("T", "tram", 50), Stop("M1", "metro", 140),
         ]).Select(s => s.Id));
+
+    [Fact]
+    public void Lists_lines_without_real_time_last() =>
+        Assert.Equal(["14", "A", "20", "ORLYVAL"], ModeOrder.Sort([
+            new("C01388", "ORLYVAL", "rail", "#000000", "#ffffff", Realtime: false),
+            new("C01077", "20", "bus", "#000000", "#ffffff"),
+            new("C01742", "A", "rail", "#000000", "#ffffff"),
+            new("C01384", "14", "metro", "#000000", "#ffffff"),
+        ]).Select(l => l.Name));
 }

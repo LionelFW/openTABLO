@@ -22,7 +22,7 @@ public sealed class DeparturesService(PrimClient prim, TabloDbContext db, Hybrid
                 var lineIds = visits.Select(v => SiriMapper.LineId(v.MonitoredVehicleJourney?.LineRef?.Value)).Distinct().ToList();
                 var lines = await db.Lines.AsNoTracking()
                     .Where(l => lineIds.Contains(l.Id))
-                    .ToDictionaryAsync(l => l.Id, l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor), token);
+                    .ToDictionaryAsync(l => l.Id, l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor, l.HasRealtime), token);
                 var now = clock.GetUtcNow();
                 return new DeparturesResponse(stopAreaId, now, SiriMapper.ToDepartureGroups(visits, lines, now));
             },

@@ -12,7 +12,7 @@ public static class ModeOrder
         _ => 4,
     };
 
-    /// <summary>Lines as listed on signage: by mode, then 2 before 10, then by name.</summary>
+    /// <summary>Lines as listed on signage: by mode, then 2 before 10, then by name; lines without real time last.</summary>
     public static List<LineDto> Sort(IEnumerable<LineDto> lines) =>
-        lines.OrderBy(l => Of(l.Mode)).ThenBy(l => l.Name.Length).ThenBy(l => l.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        lines.OrderBy(l => !l.Realtime).ThenBy(l => Of(l.Mode)).ThenBy(l => l.Name.Length).ThenBy(l => l.Name, StringComparer.OrdinalIgnoreCase).ToList();
 }

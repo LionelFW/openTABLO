@@ -17,4 +17,9 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- IDFM "périmètre des données temps réel", refreshed by hand: see ReferentialImporter.RealtimeLines. -->
+    <EmbeddedResource Include="Referential/realtime-lines.json" LogicalName="realtime-lines.json" />
+  </ItemGroup>
+
 </Project>

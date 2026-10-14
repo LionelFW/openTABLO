@@ -69,7 +69,12 @@ function renderDepartures(stop: StopArea): string {
   const groups = data.departures
     .map(g => ({ ...g, next: g.next.filter(d => d.atStop || !d.expected || Date.parse(d.expected) > Date.now() - 60_000) }))
     .filter(g => g.next.length > 0)
-  if (groups.length === 0) return `<p class="muted">Aucun passage prévu dans les deux prochaines heures.</p>`
+  // The stop's other lines, so a line with no train now is told apart from one PRIM never times.
+  const shown = new Set(groups.map(g => g.lineId))
+  const quiet = stop.lines.filter(l => !shown.has(l.id))
+  const quietHtml = quiet.length ? `<ul class="quiet-lines">${quiet.map(l => `
+    <li>${lineBadge(l, l.id)}<span>${l.realtime ? 'Pas de passage pour le moment' : "Pas d'horaires en temps réel"}</span></li>`).join('')}</ul>` : ''
+  if (groups.length === 0) return quietHtml || `<p class="muted">Aucun passage prévu dans les deux prochaines heures.</p>`
 
   return `<ul class="departures">${groups.map(g => `
     <li class="departure">
@@ -80,6 +85,7 @@ function renderDepartures(stop: StopArea): string {
         return `<span class="time ${t.cls}" aria-label="${t.sr}">${t.text}</span>`
       }).join('')}</span>
     </li>`).join('')}</ul>
+    ${quietHtml}
     <p class="updated">${updatedLabel(data.fetchedAt)}</p>`
 }
 
