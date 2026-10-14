@@ -12,7 +12,7 @@ public static class DisruptionMapper
     {
         var active = (bulk.Disruptions ?? [])
             .Where(d => (d.ApplicationPeriods ?? []).Any(p => IsActive(p, parisNow)))
-            .ToDictionary(d => d.Id, d => new DisruptionDto(d.Id, d.Severity, d.Cause, d.Title, d.ShortMessage, d.Message));
+            .ToDictionary(d => d.Id);
 
         return (bulk.Lines ?? [])
             .Select(l => (
@@ -21,10 +21,27 @@ public static class DisruptionMapper
                     .SelectMany(o => o.DisruptionIds ?? [])
                     .Distinct()
                     .Where(active.ContainsKey)
-                    .Select(id => active[id])
+                    .Select(id => ToDto(active[id], l))
                     .ToList()))
             .Where(l => l.Disruptions.Count > 0)
             .ToDictionary(l => l.LineId, l => l.Disruptions);
+    }
+
+    static DisruptionDto ToDto(Disruption d, DisruptedLine line)
+    {
+        // Stops listed for this line say exactly where; the section is the fallback when PRIM gives none.
+        var places = (line.ImpactedObjects ?? [])
+            .Where(o => o.Type != "line" && o.Name is not null && (o.DisruptionIds ?? []).Contains(d.Id))
+            .Select(o => o.Name!)
+            .Distinct()
+            .ToList();
+        if (places.Count == 0)
+            places = (d.ImpactedSections ?? [])
+                .Where(s => s.LineId == line.Id && s.From?.Name is not null)
+                .Select(s => s.To?.Name is { } to && to != s.From!.Name ? $"{s.From!.Name} → {to}" : s.From!.Name!)
+                .Distinct()
+                .ToList();
+        return new DisruptionDto(d.Id, d.Severity, d.Cause, d.Title, d.ShortMessage, d.Message, places);
     }
 
     static bool IsActive(ApplicationPeriod period, DateTime parisNow) =>

@@ -16,7 +16,8 @@ public sealed record DepartureGroupDto(string LineId, LineDto? Line, string Dest
 
 public sealed record DeparturesResponse(string StopAreaId, DateTimeOffset FetchedAt, IReadOnlyList<DepartureGroupDto> Departures);
 
-public sealed record DisruptionDto(string Id, string? Severity, string? Cause, string? Title, string? ShortMessage, string? Message);
+/// <summary><paramref name="Places"/> names the affected stops on this line, or the affected section ("A → B").</summary>
+public sealed record DisruptionDto(string Id, string? Severity, string? Cause, string? Title, string? ShortMessage, string? Message, IReadOnlyList<string> Places);
 
 public sealed record LineDisruptionsDto(string LineId, IReadOnlyList<DisruptionDto> Disruptions);
 

@@ -11,6 +11,8 @@ namespace OpenTablo.Api.Referential;
 public sealed class NearbyService(TabloDbContext db, VelibStatusService velibStatus, IOptions<SearchOptions> options, ILogger<NearbyService> logger)
 {
     static readonly string[] HeroTypes = ["metro", "rail"];
+    // Beyond this a station is no longer "nearby", e.g. a Métro 28 km away from rural Yvelines.
+    const int HeroMaxDistance = 5000;
 
     public int ClampRadius(int? radius) => Math.Clamp(radius ?? options.Value.DefaultRadius, 50, options.Value.MaxRadius);
 
@@ -18,9 +20,12 @@ public sealed class NearbyService(TabloDbContext db, VelibStatusService velibSta
     {
         var here = new Point(lon, lat) { SRID = 4326 };
 
-        // One hero per heavy mode, searched beyond the radius so the nearest station shows even with a small radius.
-        var heroes = PickHeroes(await QueryStopsAsync(
-            db.StopAreas.Where(s => HeroTypes.Contains(s.Type) && s.Location.IsWithinDistance(here, options.Value.HeroMaxDistance)), here, ct));
+        // The nearest station of each heavy mode, even beyond the radius: it is what most people look for.
+        var heroes = new List<StopAreaDto>();
+        foreach (var type in HeroTypes)
+            heroes.AddRange(await QueryStopsAsync(
+                db.StopAreas.Where(s => s.Type == type && s.Location.IsWithinDistance(here, HeroMaxDistance)), here, ct, limit: 1));
+        heroes.Sort((a, b) => a.Distance.CompareTo(b.Distance));
         var heroIds = heroes.Select(h => h.Id).ToHashSet();
 
         var stops = (await QueryStopsAsync(db.StopAreas.Where(s => s.Location.IsWithinDistance(here, radius)), here, ct))
@@ -42,19 +47,12 @@ public sealed class NearbyService(TabloDbContext db, VelibStatusService velibSta
         return new NearbyResponse(radius, heroes, stops, velib);
     }
 
-    /// <summary>The nearest stop of each hero type, nearest first.</summary>
-    public static List<StopAreaDto> PickHeroes(IEnumerable<StopAreaDto> stops) =>
-        stops.Where(s => HeroTypes.Contains(s.Type))
-            .GroupBy(s => s.Type)
-            .Select(g => g.MinBy(s => s.Distance)!)
-            .OrderBy(s => s.Distance)
-            .ToList();
-
     /// <summary>Stops ordered by distance, with their lines in signage order.</summary>
-    static async Task<List<StopAreaDto>> QueryStopsAsync(IQueryable<StopArea> query, Point here, CancellationToken ct) =>
+    static async Task<List<StopAreaDto>> QueryStopsAsync(IQueryable<StopArea> query, Point here, CancellationToken ct, int? limit = null)
+    {
+        var ordered = query.AsNoTracking().OrderBy(s => s.Location.Distance(here));
         // Coordinates are read from the materialized Point: ST_X/ST_Y do not exist for geography columns.
-        (await query.AsNoTracking()
-            .OrderBy(s => s.Location.Distance(here))
+        return (await (limit is { } n ? ordered.Take(n) : ordered)
             .Select(s => new { s.Id, s.Name, s.Type, s.Location, Distance = (int)s.Location.Distance(here), s.Lines })
             .ToListAsync(ct))
         .Select(s => new StopAreaDto(
@@ -64,6 +62,7 @@ public sealed class NearbyService(TabloDbContext db, VelibStatusService velibSta
                 .Select(l => new LineDto(l.Id, l.Name, l.Mode, l.Color, l.TextColor))
                 .ToList()))
         .ToList();
+    }
 
     async Task<Dictionary<long, GbfsStationStatus>> GetVelibStatusAsync(CancellationToken ct)
     {

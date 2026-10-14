@@ -9,4 +9,5 @@ public sealed record GeocoderFeature(GeocoderGeometry Geometry, GeocoderProperti
 /// <summary>Coordinates are [longitude, latitude].</summary>
 public sealed record GeocoderGeometry(IReadOnlyList<double> Coordinates);
 
-public sealed record GeocoderProperties(string Label);
+/// <summary><paramref name="CityCode"/> is the INSEE commune code; its first two digits are the department.</summary>
+public sealed record GeocoderProperties(string Label, string? CityCode);

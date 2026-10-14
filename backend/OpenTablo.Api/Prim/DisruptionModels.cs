@@ -13,10 +13,15 @@ public sealed record Disruption(
     string? Severity,
     string? Title,
     string? ShortMessage,
-    string? Message);
+    string? Message,
+    IReadOnlyList<ImpactedSection>? ImpactedSections = null);
 
 public sealed record ApplicationPeriod(string? Begin, string? End);
 
 public sealed record DisruptedLine(string Id, IReadOnlyList<ImpactedObject>? ImpactedObjects);
 
-public sealed record ImpactedObject(string? Type, string? Id, IReadOnlyList<string>? DisruptionIds);
+public sealed record ImpactedObject(string? Type, string? Id, string? Name, IReadOnlyList<string>? DisruptionIds);
+
+public sealed record ImpactedSection(string? LineId, SectionEnd? From, SectionEnd? To);
+
+public sealed record SectionEnd(string? Name);
